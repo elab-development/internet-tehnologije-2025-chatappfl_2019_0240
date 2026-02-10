@@ -14,8 +14,9 @@ import 'package:serverpod_client/serverpod_client.dart' as _i1;
 import 'greetings/greeting.dart' as _i2;
 import 'package:serverpod_auth_idp_client/serverpod_auth_idp_client.dart'
     as _i3;
+import 'package:serverpod_auth_client/serverpod_auth_client.dart' as _i4;
 import 'package:serverpod_auth_core_client/serverpod_auth_core_client.dart'
-    as _i4;
+    as _i5;
 export 'greetings/greeting.dart';
 export 'client.dart';
 
@@ -65,6 +66,9 @@ class Protocol extends _i1.SerializationManager {
     try {
       return _i4.Protocol().deserialize<T>(data, t);
     } on _i1.DeserializationTypeNotFoundException catch (_) {}
+    try {
+      return _i5.Protocol().deserialize<T>(data, t);
+    } on _i1.DeserializationTypeNotFoundException catch (_) {}
     return super.deserialize<T>(data, t);
   }
 
@@ -81,7 +85,7 @@ class Protocol extends _i1.SerializationManager {
     if (className != null) return className;
 
     if (data is Map<String, dynamic> && data['__className__'] is String) {
-      return (data['__className__'] as String).replaceFirst('tmp_lasta.', '');
+      return (data['__className__'] as String).replaceFirst('chatapp.', '');
     }
 
     switch (data) {
@@ -93,6 +97,10 @@ class Protocol extends _i1.SerializationManager {
       return 'serverpod_auth_idp.$className';
     }
     className = _i4.Protocol().getClassNameForObject(data);
+    if (className != null) {
+      return 'serverpod_auth.$className';
+    }
+    className = _i5.Protocol().getClassNameForObject(data);
     if (className != null) {
       return 'serverpod_auth_core.$className';
     }
@@ -112,9 +120,13 @@ class Protocol extends _i1.SerializationManager {
       data['className'] = dataClassName.substring(19);
       return _i3.Protocol().deserializeByClassName(data);
     }
+    if (dataClassName.startsWith('serverpod_auth.')) {
+      data['className'] = dataClassName.substring(15);
+      return _i4.Protocol().deserializeByClassName(data);
+    }
     if (dataClassName.startsWith('serverpod_auth_core.')) {
       data['className'] = dataClassName.substring(20);
-      return _i4.Protocol().deserializeByClassName(data);
+      return _i5.Protocol().deserializeByClassName(data);
     }
     return super.deserializeByClassName(data);
   }

@@ -1,0 +1,9 @@
+name: chat493_workspace
+environment:
+  sdk: '>=3.5.0 <4.0.0'
+workspace:
+  - apps/mobile_app
+  - backend/server
+  - packages/api_client
+dev_dependencies:
+  melos: ^7.4.0

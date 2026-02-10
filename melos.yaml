@@ -1,0 +1,8 @@
+name: chat493_workspace
+packages:
+  - apps/**
+  - backend/**
+  - packages/**
+command:
+  bootstrap:
+    usePubspecOverrides: true

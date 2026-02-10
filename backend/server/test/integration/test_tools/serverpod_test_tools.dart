@@ -17,9 +17,9 @@ import 'package:serverpod/serverpod.dart' as _i2;
 import 'dart:async' as _i3;
 import 'package:serverpod_auth_core_server/serverpod_auth_core_server.dart'
     as _i4;
-import 'package:tmp_lasta_server/src/generated/greetings/greeting.dart' as _i5;
-import 'package:tmp_lasta_server/src/generated/protocol.dart';
-import 'package:tmp_lasta_server/src/generated/endpoints.dart';
+import 'package:chatapp_server/src/generated/greetings/greeting.dart' as _i5;
+import 'package:chatapp_server/src/generated/protocol.dart';
+import 'package:chatapp_server/src/generated/endpoints.dart';
 export 'package:serverpod_test/serverpod_test_public_exports.dart';
 
 /// Creates a new test group that takes a callback that can be used to write tests.
