@@ -1,0 +1,24 @@
+name: chatapp_server
+description: Starting point for a Serverpod server.
+resolution: workspace
+
+environment:
+  sdk: '^3.8.0'
+
+dependencies:
+  serverpod: 3.1.1
+  serverpod_auth_idp_server: 3.1.1
+  serverpod_auth_server: 3.1.1 # bazični auth
+  chatapp_client:
+    path: ../../packages/api_client # popravljena putanja
+
+dev_dependencies:
+  lints: '>=3.0.0 <7.0.0'
+  serverpod_test: 3.1.1
+  test: ^1.25.5
+
+serverpod:
+  scripts:
+    start: dart bin/main.dart --apply-migrations
+    # Popravljena skripta za novu putanju
+    flutter_build: cd ../../apps/mobile_app && flutter build web --base-href /app/ --wasm && rm -rf ../../backend/server/web/app && mv build/web/ ../../backend/server/web/app
