@@ -11,13 +11,26 @@
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod_client/serverpod_client.dart' as _i1;
-import 'greetings/greeting.dart' as _i2;
+import 'channel.dart' as _i2;
+import 'channel_member.dart' as _i3;
+import 'channel_view_state.dart' as _i4;
+import 'fcm_token.dart' as _i5;
+import 'greetings/greeting.dart' as _i6;
+import 'message.dart' as _i7;
+import 'user_public_profile.dart' as _i8;
+import 'package:chatapp_client/src/protocol/channel.dart' as _i9;
+import 'package:serverpod_auth_client/serverpod_auth_client.dart' as _i10;
 import 'package:serverpod_auth_idp_client/serverpod_auth_idp_client.dart'
-    as _i3;
-import 'package:serverpod_auth_client/serverpod_auth_client.dart' as _i4;
+    as _i11;
 import 'package:serverpod_auth_core_client/serverpod_auth_core_client.dart'
-    as _i5;
+    as _i12;
+export 'channel.dart';
+export 'channel_member.dart';
+export 'channel_view_state.dart';
+export 'fcm_token.dart';
 export 'greetings/greeting.dart';
+export 'message.dart';
+export 'user_public_profile.dart';
 export 'client.dart';
 
 class Protocol extends _i1.SerializationManager {
@@ -54,27 +67,77 @@ class Protocol extends _i1.SerializationManager {
       }
     }
 
-    if (t == _i2.Greeting) {
-      return _i2.Greeting.fromJson(data) as T;
+    if (t == _i2.Channel) {
+      return _i2.Channel.fromJson(data) as T;
     }
-    if (t == _i1.getType<_i2.Greeting?>()) {
-      return (data != null ? _i2.Greeting.fromJson(data) : null) as T;
+    if (t == _i3.ChannelMember) {
+      return _i3.ChannelMember.fromJson(data) as T;
+    }
+    if (t == _i4.ChannelViewState) {
+      return _i4.ChannelViewState.fromJson(data) as T;
+    }
+    if (t == _i5.FcmToken) {
+      return _i5.FcmToken.fromJson(data) as T;
+    }
+    if (t == _i6.Greeting) {
+      return _i6.Greeting.fromJson(data) as T;
+    }
+    if (t == _i7.Message) {
+      return _i7.Message.fromJson(data) as T;
+    }
+    if (t == _i8.UserPublicProfile) {
+      return _i8.UserPublicProfile.fromJson(data) as T;
+    }
+    if (t == _i1.getType<_i2.Channel?>()) {
+      return (data != null ? _i2.Channel.fromJson(data) : null) as T;
+    }
+    if (t == _i1.getType<_i3.ChannelMember?>()) {
+      return (data != null ? _i3.ChannelMember.fromJson(data) : null) as T;
+    }
+    if (t == _i1.getType<_i4.ChannelViewState?>()) {
+      return (data != null ? _i4.ChannelViewState.fromJson(data) : null) as T;
+    }
+    if (t == _i1.getType<_i5.FcmToken?>()) {
+      return (data != null ? _i5.FcmToken.fromJson(data) : null) as T;
+    }
+    if (t == _i1.getType<_i6.Greeting?>()) {
+      return (data != null ? _i6.Greeting.fromJson(data) : null) as T;
+    }
+    if (t == _i1.getType<_i7.Message?>()) {
+      return (data != null ? _i7.Message.fromJson(data) : null) as T;
+    }
+    if (t == _i1.getType<_i8.UserPublicProfile?>()) {
+      return (data != null ? _i8.UserPublicProfile.fromJson(data) : null) as T;
+    }
+    if (t == List<_i9.Channel>) {
+      return (data as List).map((e) => deserialize<_i9.Channel>(e)).toList()
+          as T;
+    }
+    if (t == List<_i10.UserInfo>) {
+      return (data as List).map((e) => deserialize<_i10.UserInfo>(e)).toList()
+          as T;
     }
     try {
-      return _i3.Protocol().deserialize<T>(data, t);
+      return _i11.Protocol().deserialize<T>(data, t);
     } on _i1.DeserializationTypeNotFoundException catch (_) {}
     try {
-      return _i4.Protocol().deserialize<T>(data, t);
+      return _i10.Protocol().deserialize<T>(data, t);
     } on _i1.DeserializationTypeNotFoundException catch (_) {}
     try {
-      return _i5.Protocol().deserialize<T>(data, t);
+      return _i12.Protocol().deserialize<T>(data, t);
     } on _i1.DeserializationTypeNotFoundException catch (_) {}
     return super.deserialize<T>(data, t);
   }
 
   static String? getClassNameForType(Type type) {
     return switch (type) {
-      _i2.Greeting => 'Greeting',
+      _i2.Channel => 'Channel',
+      _i3.ChannelMember => 'ChannelMember',
+      _i4.ChannelViewState => 'ChannelViewState',
+      _i5.FcmToken => 'FcmToken',
+      _i6.Greeting => 'Greeting',
+      _i7.Message => 'Message',
+      _i8.UserPublicProfile => 'UserPublicProfile',
       _ => null,
     };
   }
@@ -89,18 +152,30 @@ class Protocol extends _i1.SerializationManager {
     }
 
     switch (data) {
-      case _i2.Greeting():
+      case _i2.Channel():
+        return 'Channel';
+      case _i3.ChannelMember():
+        return 'ChannelMember';
+      case _i4.ChannelViewState():
+        return 'ChannelViewState';
+      case _i5.FcmToken():
+        return 'FcmToken';
+      case _i6.Greeting():
         return 'Greeting';
+      case _i7.Message():
+        return 'Message';
+      case _i8.UserPublicProfile():
+        return 'UserPublicProfile';
     }
-    className = _i3.Protocol().getClassNameForObject(data);
+    className = _i11.Protocol().getClassNameForObject(data);
     if (className != null) {
       return 'serverpod_auth_idp.$className';
     }
-    className = _i4.Protocol().getClassNameForObject(data);
+    className = _i10.Protocol().getClassNameForObject(data);
     if (className != null) {
       return 'serverpod_auth.$className';
     }
-    className = _i5.Protocol().getClassNameForObject(data);
+    className = _i12.Protocol().getClassNameForObject(data);
     if (className != null) {
       return 'serverpod_auth_core.$className';
     }
@@ -113,20 +188,38 @@ class Protocol extends _i1.SerializationManager {
     if (dataClassName is! String) {
       return super.deserializeByClassName(data);
     }
+    if (dataClassName == 'Channel') {
+      return deserialize<_i2.Channel>(data['data']);
+    }
+    if (dataClassName == 'ChannelMember') {
+      return deserialize<_i3.ChannelMember>(data['data']);
+    }
+    if (dataClassName == 'ChannelViewState') {
+      return deserialize<_i4.ChannelViewState>(data['data']);
+    }
+    if (dataClassName == 'FcmToken') {
+      return deserialize<_i5.FcmToken>(data['data']);
+    }
     if (dataClassName == 'Greeting') {
-      return deserialize<_i2.Greeting>(data['data']);
+      return deserialize<_i6.Greeting>(data['data']);
+    }
+    if (dataClassName == 'Message') {
+      return deserialize<_i7.Message>(data['data']);
+    }
+    if (dataClassName == 'UserPublicProfile') {
+      return deserialize<_i8.UserPublicProfile>(data['data']);
     }
     if (dataClassName.startsWith('serverpod_auth_idp.')) {
       data['className'] = dataClassName.substring(19);
-      return _i3.Protocol().deserializeByClassName(data);
+      return _i11.Protocol().deserializeByClassName(data);
     }
     if (dataClassName.startsWith('serverpod_auth.')) {
       data['className'] = dataClassName.substring(15);
-      return _i4.Protocol().deserializeByClassName(data);
+      return _i10.Protocol().deserializeByClassName(data);
     }
     if (dataClassName.startsWith('serverpod_auth_core.')) {
       data['className'] = dataClassName.substring(20);
-      return _i5.Protocol().deserializeByClassName(data);
+      return _i12.Protocol().deserializeByClassName(data);
     }
     return super.deserializeByClassName(data);
   }

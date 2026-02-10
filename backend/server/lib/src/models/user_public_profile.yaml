@@ -1,0 +1,5 @@
+# backend/server/lib/src/models/user_public_profile.yaml
+class: UserPublicProfile
+fields:
+  userInfo: module:auth:UserInfo
+  isOnline: bool

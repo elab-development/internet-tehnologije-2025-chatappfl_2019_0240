@@ -1,0 +1,8 @@
+class: Message
+table: message
+fields:
+  content: String
+  timestamp: DateTime
+  sender: module:auth:UserInfo?, relation
+  channel: Channel?, relation
+  status: String?

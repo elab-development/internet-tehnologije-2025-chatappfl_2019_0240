@@ -8,5 +8,18 @@ emailIdp:
   - finishPasswordReset:
 jwtRefresh:
   - refreshAccessToken:
+channel:
+  - createChannel:
+  - renameChannel:
+  - addUserToChannel:
+  - removeUserFromChannel:
+  - getChannels:
+chat:
+  - sendMessage:
+user:
+  - getMe:
+  - getAllAvailableUsers:
+  - searchUsers:
+  - getUserPublicProfile:
 greeting:
   - hello:

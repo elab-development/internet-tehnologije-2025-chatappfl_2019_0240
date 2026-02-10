@@ -1,0 +1,11 @@
+class: FcmToken
+table: fcm_token
+fields:
+  user: module:auth:UserInfo?, relation
+  token: String
+  deviceType: String
+
+indexes:
+  fcm_token_user_idx:
+    fields: userId # Mora userId jer je to kolona u bazi koju pravi relation
+    unique: false

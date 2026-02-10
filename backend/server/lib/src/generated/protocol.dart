@@ -17,8 +17,21 @@ import 'package:serverpod_auth_idp_server/serverpod_auth_idp_server.dart'
 import 'package:serverpod_auth_server/serverpod_auth_server.dart' as _i4;
 import 'package:serverpod_auth_core_server/serverpod_auth_core_server.dart'
     as _i5;
-import 'greetings/greeting.dart' as _i6;
+import 'channel.dart' as _i6;
+import 'channel_member.dart' as _i7;
+import 'channel_view_state.dart' as _i8;
+import 'fcm_token.dart' as _i9;
+import 'greetings/greeting.dart' as _i10;
+import 'message.dart' as _i11;
+import 'user_public_profile.dart' as _i12;
+import 'package:chatapp_server/src/generated/channel.dart' as _i13;
+export 'channel.dart';
+export 'channel_member.dart';
+export 'channel_view_state.dart';
+export 'fcm_token.dart';
 export 'greetings/greeting.dart';
+export 'message.dart';
+export 'user_public_profile.dart';
 
 class Protocol extends _i1.SerializationManagerServer {
   Protocol._();
@@ -28,6 +41,355 @@ class Protocol extends _i1.SerializationManagerServer {
   static final Protocol _instance = Protocol._();
 
   static final List<_i2.TableDefinition> targetTableDefinitions = [
+    _i2.TableDefinition(
+      name: 'channel',
+      dartName: 'Channel',
+      schema: 'public',
+      module: 'chatapp',
+      columns: [
+        _i2.ColumnDefinition(
+          name: 'id',
+          columnType: _i2.ColumnType.bigint,
+          isNullable: false,
+          dartType: 'int?',
+          columnDefault: 'nextval(\'channel_id_seq\'::regclass)',
+        ),
+        _i2.ColumnDefinition(
+          name: 'name',
+          columnType: _i2.ColumnType.text,
+          isNullable: false,
+          dartType: 'String',
+        ),
+        _i2.ColumnDefinition(
+          name: 'type',
+          columnType: _i2.ColumnType.text,
+          isNullable: false,
+          dartType: 'String',
+        ),
+      ],
+      foreignKeys: [],
+      indexes: [
+        _i2.IndexDefinition(
+          indexName: 'channel_pkey',
+          tableSpace: null,
+          elements: [
+            _i2.IndexElementDefinition(
+              type: _i2.IndexElementDefinitionType.column,
+              definition: 'id',
+            ),
+          ],
+          type: 'btree',
+          isUnique: true,
+          isPrimary: true,
+        ),
+      ],
+      managed: true,
+    ),
+    _i2.TableDefinition(
+      name: 'channel_member',
+      dartName: 'ChannelMember',
+      schema: 'public',
+      module: 'chatapp',
+      columns: [
+        _i2.ColumnDefinition(
+          name: 'id',
+          columnType: _i2.ColumnType.bigint,
+          isNullable: false,
+          dartType: 'int?',
+          columnDefault: 'nextval(\'channel_member_id_seq\'::regclass)',
+        ),
+        _i2.ColumnDefinition(
+          name: 'userId',
+          columnType: _i2.ColumnType.bigint,
+          isNullable: false,
+          dartType: 'int',
+        ),
+        _i2.ColumnDefinition(
+          name: 'channelId',
+          columnType: _i2.ColumnType.bigint,
+          isNullable: false,
+          dartType: 'int',
+        ),
+        _i2.ColumnDefinition(
+          name: 'role',
+          columnType: _i2.ColumnType.text,
+          isNullable: false,
+          dartType: 'String',
+        ),
+        _i2.ColumnDefinition(
+          name: 'joinedAt',
+          columnType: _i2.ColumnType.timestampWithoutTimeZone,
+          isNullable: true,
+          dartType: 'DateTime?',
+        ),
+      ],
+      foreignKeys: [
+        _i2.ForeignKeyDefinition(
+          constraintName: 'channel_member_fk_0',
+          columns: ['userId'],
+          referenceTable: 'serverpod_user_info',
+          referenceTableSchema: 'public',
+          referenceColumns: ['id'],
+          onUpdate: _i2.ForeignKeyAction.noAction,
+          onDelete: _i2.ForeignKeyAction.noAction,
+          matchType: null,
+        ),
+        _i2.ForeignKeyDefinition(
+          constraintName: 'channel_member_fk_1',
+          columns: ['channelId'],
+          referenceTable: 'channel',
+          referenceTableSchema: 'public',
+          referenceColumns: ['id'],
+          onUpdate: _i2.ForeignKeyAction.noAction,
+          onDelete: _i2.ForeignKeyAction.noAction,
+          matchType: null,
+        ),
+      ],
+      indexes: [
+        _i2.IndexDefinition(
+          indexName: 'channel_member_pkey',
+          tableSpace: null,
+          elements: [
+            _i2.IndexElementDefinition(
+              type: _i2.IndexElementDefinitionType.column,
+              definition: 'id',
+            ),
+          ],
+          type: 'btree',
+          isUnique: true,
+          isPrimary: true,
+        ),
+      ],
+      managed: true,
+    ),
+    _i2.TableDefinition(
+      name: 'channel_view_state',
+      dartName: 'ChannelViewState',
+      schema: 'public',
+      module: 'chatapp',
+      columns: [
+        _i2.ColumnDefinition(
+          name: 'id',
+          columnType: _i2.ColumnType.bigint,
+          isNullable: false,
+          dartType: 'int?',
+          columnDefault: 'nextval(\'channel_view_state_id_seq\'::regclass)',
+        ),
+        _i2.ColumnDefinition(
+          name: 'channelId',
+          columnType: _i2.ColumnType.bigint,
+          isNullable: false,
+          dartType: 'int',
+        ),
+        _i2.ColumnDefinition(
+          name: 'userId',
+          columnType: _i2.ColumnType.bigint,
+          isNullable: false,
+          dartType: 'int',
+        ),
+        _i2.ColumnDefinition(
+          name: 'lastReadMessageId',
+          columnType: _i2.ColumnType.bigint,
+          isNullable: true,
+          dartType: 'int?',
+        ),
+      ],
+      foreignKeys: [
+        _i2.ForeignKeyDefinition(
+          constraintName: 'channel_view_state_fk_0',
+          columns: ['channelId'],
+          referenceTable: 'channel',
+          referenceTableSchema: 'public',
+          referenceColumns: ['id'],
+          onUpdate: _i2.ForeignKeyAction.noAction,
+          onDelete: _i2.ForeignKeyAction.noAction,
+          matchType: null,
+        ),
+        _i2.ForeignKeyDefinition(
+          constraintName: 'channel_view_state_fk_1',
+          columns: ['userId'],
+          referenceTable: 'serverpod_user_info',
+          referenceTableSchema: 'public',
+          referenceColumns: ['id'],
+          onUpdate: _i2.ForeignKeyAction.noAction,
+          onDelete: _i2.ForeignKeyAction.noAction,
+          matchType: null,
+        ),
+      ],
+      indexes: [
+        _i2.IndexDefinition(
+          indexName: 'channel_view_state_pkey',
+          tableSpace: null,
+          elements: [
+            _i2.IndexElementDefinition(
+              type: _i2.IndexElementDefinitionType.column,
+              definition: 'id',
+            ),
+          ],
+          type: 'btree',
+          isUnique: true,
+          isPrimary: true,
+        ),
+      ],
+      managed: true,
+    ),
+    _i2.TableDefinition(
+      name: 'fcm_token',
+      dartName: 'FcmToken',
+      schema: 'public',
+      module: 'chatapp',
+      columns: [
+        _i2.ColumnDefinition(
+          name: 'id',
+          columnType: _i2.ColumnType.bigint,
+          isNullable: false,
+          dartType: 'int?',
+          columnDefault: 'nextval(\'fcm_token_id_seq\'::regclass)',
+        ),
+        _i2.ColumnDefinition(
+          name: 'userId',
+          columnType: _i2.ColumnType.bigint,
+          isNullable: false,
+          dartType: 'int',
+        ),
+        _i2.ColumnDefinition(
+          name: 'token',
+          columnType: _i2.ColumnType.text,
+          isNullable: false,
+          dartType: 'String',
+        ),
+        _i2.ColumnDefinition(
+          name: 'deviceType',
+          columnType: _i2.ColumnType.text,
+          isNullable: false,
+          dartType: 'String',
+        ),
+      ],
+      foreignKeys: [
+        _i2.ForeignKeyDefinition(
+          constraintName: 'fcm_token_fk_0',
+          columns: ['userId'],
+          referenceTable: 'serverpod_user_info',
+          referenceTableSchema: 'public',
+          referenceColumns: ['id'],
+          onUpdate: _i2.ForeignKeyAction.noAction,
+          onDelete: _i2.ForeignKeyAction.noAction,
+          matchType: null,
+        ),
+      ],
+      indexes: [
+        _i2.IndexDefinition(
+          indexName: 'fcm_token_pkey',
+          tableSpace: null,
+          elements: [
+            _i2.IndexElementDefinition(
+              type: _i2.IndexElementDefinitionType.column,
+              definition: 'id',
+            ),
+          ],
+          type: 'btree',
+          isUnique: true,
+          isPrimary: true,
+        ),
+        _i2.IndexDefinition(
+          indexName: 'fcm_token_user_idx',
+          tableSpace: null,
+          elements: [
+            _i2.IndexElementDefinition(
+              type: _i2.IndexElementDefinitionType.column,
+              definition: 'userId',
+            ),
+          ],
+          type: 'btree',
+          isUnique: false,
+          isPrimary: false,
+        ),
+      ],
+      managed: true,
+    ),
+    _i2.TableDefinition(
+      name: 'message',
+      dartName: 'Message',
+      schema: 'public',
+      module: 'chatapp',
+      columns: [
+        _i2.ColumnDefinition(
+          name: 'id',
+          columnType: _i2.ColumnType.bigint,
+          isNullable: false,
+          dartType: 'int?',
+          columnDefault: 'nextval(\'message_id_seq\'::regclass)',
+        ),
+        _i2.ColumnDefinition(
+          name: 'content',
+          columnType: _i2.ColumnType.text,
+          isNullable: false,
+          dartType: 'String',
+        ),
+        _i2.ColumnDefinition(
+          name: 'timestamp',
+          columnType: _i2.ColumnType.timestampWithoutTimeZone,
+          isNullable: false,
+          dartType: 'DateTime',
+        ),
+        _i2.ColumnDefinition(
+          name: 'senderId',
+          columnType: _i2.ColumnType.bigint,
+          isNullable: false,
+          dartType: 'int',
+        ),
+        _i2.ColumnDefinition(
+          name: 'channelId',
+          columnType: _i2.ColumnType.bigint,
+          isNullable: false,
+          dartType: 'int',
+        ),
+        _i2.ColumnDefinition(
+          name: 'status',
+          columnType: _i2.ColumnType.text,
+          isNullable: true,
+          dartType: 'String?',
+        ),
+      ],
+      foreignKeys: [
+        _i2.ForeignKeyDefinition(
+          constraintName: 'message_fk_0',
+          columns: ['senderId'],
+          referenceTable: 'serverpod_user_info',
+          referenceTableSchema: 'public',
+          referenceColumns: ['id'],
+          onUpdate: _i2.ForeignKeyAction.noAction,
+          onDelete: _i2.ForeignKeyAction.noAction,
+          matchType: null,
+        ),
+        _i2.ForeignKeyDefinition(
+          constraintName: 'message_fk_1',
+          columns: ['channelId'],
+          referenceTable: 'channel',
+          referenceTableSchema: 'public',
+          referenceColumns: ['id'],
+          onUpdate: _i2.ForeignKeyAction.noAction,
+          onDelete: _i2.ForeignKeyAction.noAction,
+          matchType: null,
+        ),
+      ],
+      indexes: [
+        _i2.IndexDefinition(
+          indexName: 'message_pkey',
+          tableSpace: null,
+          elements: [
+            _i2.IndexElementDefinition(
+              type: _i2.IndexElementDefinitionType.column,
+              definition: 'id',
+            ),
+          ],
+          type: 'btree',
+          isUnique: true,
+          isPrimary: true,
+        ),
+      ],
+      managed: true,
+    ),
     ..._i3.Protocol.targetTableDefinitions,
     ..._i4.Protocol.targetTableDefinitions,
     ..._i5.Protocol.targetTableDefinitions,
@@ -61,11 +423,55 @@ class Protocol extends _i1.SerializationManagerServer {
       }
     }
 
-    if (t == _i6.Greeting) {
-      return _i6.Greeting.fromJson(data) as T;
+    if (t == _i6.Channel) {
+      return _i6.Channel.fromJson(data) as T;
     }
-    if (t == _i1.getType<_i6.Greeting?>()) {
-      return (data != null ? _i6.Greeting.fromJson(data) : null) as T;
+    if (t == _i7.ChannelMember) {
+      return _i7.ChannelMember.fromJson(data) as T;
+    }
+    if (t == _i8.ChannelViewState) {
+      return _i8.ChannelViewState.fromJson(data) as T;
+    }
+    if (t == _i9.FcmToken) {
+      return _i9.FcmToken.fromJson(data) as T;
+    }
+    if (t == _i10.Greeting) {
+      return _i10.Greeting.fromJson(data) as T;
+    }
+    if (t == _i11.Message) {
+      return _i11.Message.fromJson(data) as T;
+    }
+    if (t == _i12.UserPublicProfile) {
+      return _i12.UserPublicProfile.fromJson(data) as T;
+    }
+    if (t == _i1.getType<_i6.Channel?>()) {
+      return (data != null ? _i6.Channel.fromJson(data) : null) as T;
+    }
+    if (t == _i1.getType<_i7.ChannelMember?>()) {
+      return (data != null ? _i7.ChannelMember.fromJson(data) : null) as T;
+    }
+    if (t == _i1.getType<_i8.ChannelViewState?>()) {
+      return (data != null ? _i8.ChannelViewState.fromJson(data) : null) as T;
+    }
+    if (t == _i1.getType<_i9.FcmToken?>()) {
+      return (data != null ? _i9.FcmToken.fromJson(data) : null) as T;
+    }
+    if (t == _i1.getType<_i10.Greeting?>()) {
+      return (data != null ? _i10.Greeting.fromJson(data) : null) as T;
+    }
+    if (t == _i1.getType<_i11.Message?>()) {
+      return (data != null ? _i11.Message.fromJson(data) : null) as T;
+    }
+    if (t == _i1.getType<_i12.UserPublicProfile?>()) {
+      return (data != null ? _i12.UserPublicProfile.fromJson(data) : null) as T;
+    }
+    if (t == List<_i13.Channel>) {
+      return (data as List).map((e) => deserialize<_i13.Channel>(e)).toList()
+          as T;
+    }
+    if (t == List<_i4.UserInfo>) {
+      return (data as List).map((e) => deserialize<_i4.UserInfo>(e)).toList()
+          as T;
     }
     try {
       return _i3.Protocol().deserialize<T>(data, t);
@@ -84,7 +490,13 @@ class Protocol extends _i1.SerializationManagerServer {
 
   static String? getClassNameForType(Type type) {
     return switch (type) {
-      _i6.Greeting => 'Greeting',
+      _i6.Channel => 'Channel',
+      _i7.ChannelMember => 'ChannelMember',
+      _i8.ChannelViewState => 'ChannelViewState',
+      _i9.FcmToken => 'FcmToken',
+      _i10.Greeting => 'Greeting',
+      _i11.Message => 'Message',
+      _i12.UserPublicProfile => 'UserPublicProfile',
       _ => null,
     };
   }
@@ -99,8 +511,20 @@ class Protocol extends _i1.SerializationManagerServer {
     }
 
     switch (data) {
-      case _i6.Greeting():
+      case _i6.Channel():
+        return 'Channel';
+      case _i7.ChannelMember():
+        return 'ChannelMember';
+      case _i8.ChannelViewState():
+        return 'ChannelViewState';
+      case _i9.FcmToken():
+        return 'FcmToken';
+      case _i10.Greeting():
         return 'Greeting';
+      case _i11.Message():
+        return 'Message';
+      case _i12.UserPublicProfile():
+        return 'UserPublicProfile';
     }
     className = _i2.Protocol().getClassNameForObject(data);
     if (className != null) {
@@ -127,8 +551,26 @@ class Protocol extends _i1.SerializationManagerServer {
     if (dataClassName is! String) {
       return super.deserializeByClassName(data);
     }
+    if (dataClassName == 'Channel') {
+      return deserialize<_i6.Channel>(data['data']);
+    }
+    if (dataClassName == 'ChannelMember') {
+      return deserialize<_i7.ChannelMember>(data['data']);
+    }
+    if (dataClassName == 'ChannelViewState') {
+      return deserialize<_i8.ChannelViewState>(data['data']);
+    }
+    if (dataClassName == 'FcmToken') {
+      return deserialize<_i9.FcmToken>(data['data']);
+    }
     if (dataClassName == 'Greeting') {
-      return deserialize<_i6.Greeting>(data['data']);
+      return deserialize<_i10.Greeting>(data['data']);
+    }
+    if (dataClassName == 'Message') {
+      return deserialize<_i11.Message>(data['data']);
+    }
+    if (dataClassName == 'UserPublicProfile') {
+      return deserialize<_i12.UserPublicProfile>(data['data']);
     }
     if (dataClassName.startsWith('serverpod.')) {
       data['className'] = dataClassName.substring(10);
@@ -174,6 +616,18 @@ class Protocol extends _i1.SerializationManagerServer {
       if (table != null) {
         return table;
       }
+    }
+    switch (t) {
+      case _i6.Channel:
+        return _i6.Channel.t;
+      case _i7.ChannelMember:
+        return _i7.ChannelMember.t;
+      case _i8.ChannelViewState:
+        return _i8.ChannelViewState.t;
+      case _i9.FcmToken:
+        return _i9.FcmToken.t;
+      case _i11.Message:
+        return _i11.Message.t;
     }
     return null;
   }

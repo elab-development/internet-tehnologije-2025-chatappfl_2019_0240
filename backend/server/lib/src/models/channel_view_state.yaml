@@ -1,0 +1,6 @@
+class: ChannelViewState
+table: channel_view_state
+fields:
+  channel: Channel?, relation
+  user: module:auth:UserInfo?, relation
+  lastReadMessageId: int?

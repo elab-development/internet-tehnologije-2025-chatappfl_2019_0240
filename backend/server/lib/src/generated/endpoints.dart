@@ -13,12 +13,16 @@
 import 'package:serverpod/serverpod.dart' as _i1;
 import '../auth/email_idp_endpoint.dart' as _i2;
 import '../auth/jwt_refresh_endpoint.dart' as _i3;
-import '../greetings/greeting_endpoint.dart' as _i4;
+import '../endpoint/channel_endpoint.dart' as _i4;
+import '../endpoint/chat_endpoint.dart' as _i5;
+import '../endpoint/user_endpoint.dart' as _i6;
+import '../greetings/greeting_endpoint.dart' as _i7;
+import 'package:chatapp_server/src/generated/message.dart' as _i8;
 import 'package:serverpod_auth_idp_server/serverpod_auth_idp_server.dart'
-    as _i5;
-import 'package:serverpod_auth_server/serverpod_auth_server.dart' as _i6;
+    as _i9;
+import 'package:serverpod_auth_server/serverpod_auth_server.dart' as _i10;
 import 'package:serverpod_auth_core_server/serverpod_auth_core_server.dart'
-    as _i7;
+    as _i11;
 
 class Endpoints extends _i1.EndpointDispatch {
   @override
@@ -36,7 +40,25 @@ class Endpoints extends _i1.EndpointDispatch {
           'jwtRefresh',
           null,
         ),
-      'greeting': _i4.GreetingEndpoint()
+      'channel': _i4.ChannelEndpoint()
+        ..initialize(
+          server,
+          'channel',
+          null,
+        ),
+      'chat': _i5.ChatEndpoint()
+        ..initialize(
+          server,
+          'chat',
+          null,
+        ),
+      'user': _i6.UserEndpoint()
+        ..initialize(
+          server,
+          'user',
+          null,
+        ),
+      'greeting': _i7.GreetingEndpoint()
         ..initialize(
           server,
           'greeting',
@@ -237,6 +259,208 @@ class Endpoints extends _i1.EndpointDispatch {
         ),
       },
     );
+    connectors['channel'] = _i1.EndpointConnector(
+      name: 'channel',
+      endpoint: endpoints['channel']!,
+      methodConnectors: {
+        'createChannel': _i1.MethodConnector(
+          name: 'createChannel',
+          params: {
+            'name': _i1.ParameterDescription(
+              name: 'name',
+              type: _i1.getType<String>(),
+              nullable: false,
+            ),
+            'type': _i1.ParameterDescription(
+              name: 'type',
+              type: _i1.getType<String>(),
+              nullable: false,
+            ),
+          },
+          call:
+              (
+                _i1.Session session,
+                Map<String, dynamic> params,
+              ) async =>
+                  (endpoints['channel'] as _i4.ChannelEndpoint).createChannel(
+                    session,
+                    params['name'],
+                    params['type'],
+                  ),
+        ),
+        'renameChannel': _i1.MethodConnector(
+          name: 'renameChannel',
+          params: {
+            'channelId': _i1.ParameterDescription(
+              name: 'channelId',
+              type: _i1.getType<int>(),
+              nullable: false,
+            ),
+            'newName': _i1.ParameterDescription(
+              name: 'newName',
+              type: _i1.getType<String>(),
+              nullable: false,
+            ),
+          },
+          call:
+              (
+                _i1.Session session,
+                Map<String, dynamic> params,
+              ) async =>
+                  (endpoints['channel'] as _i4.ChannelEndpoint).renameChannel(
+                    session,
+                    params['channelId'],
+                    params['newName'],
+                  ),
+        ),
+        'addUserToChannel': _i1.MethodConnector(
+          name: 'addUserToChannel',
+          params: {
+            'channelId': _i1.ParameterDescription(
+              name: 'channelId',
+              type: _i1.getType<int>(),
+              nullable: false,
+            ),
+            'invitedUserId': _i1.ParameterDescription(
+              name: 'invitedUserId',
+              type: _i1.getType<int>(),
+              nullable: false,
+            ),
+          },
+          call:
+              (
+                _i1.Session session,
+                Map<String, dynamic> params,
+              ) async => (endpoints['channel'] as _i4.ChannelEndpoint)
+                  .addUserToChannel(
+                    session,
+                    params['channelId'],
+                    params['invitedUserId'],
+                  ),
+        ),
+        'removeUserFromChannel': _i1.MethodConnector(
+          name: 'removeUserFromChannel',
+          params: {
+            'channelId': _i1.ParameterDescription(
+              name: 'channelId',
+              type: _i1.getType<int>(),
+              nullable: false,
+            ),
+            'userIdToRemove': _i1.ParameterDescription(
+              name: 'userIdToRemove',
+              type: _i1.getType<int>(),
+              nullable: false,
+            ),
+          },
+          call:
+              (
+                _i1.Session session,
+                Map<String, dynamic> params,
+              ) async => (endpoints['channel'] as _i4.ChannelEndpoint)
+                  .removeUserFromChannel(
+                    session,
+                    params['channelId'],
+                    params['userIdToRemove'],
+                  ),
+        ),
+        'getChannels': _i1.MethodConnector(
+          name: 'getChannels',
+          params: {},
+          call:
+              (
+                _i1.Session session,
+                Map<String, dynamic> params,
+              ) async => (endpoints['channel'] as _i4.ChannelEndpoint)
+                  .getChannels(session),
+        ),
+      },
+    );
+    connectors['chat'] = _i1.EndpointConnector(
+      name: 'chat',
+      endpoint: endpoints['chat']!,
+      methodConnectors: {
+        'sendMessage': _i1.MethodConnector(
+          name: 'sendMessage',
+          params: {
+            'message': _i1.ParameterDescription(
+              name: 'message',
+              type: _i1.getType<_i8.Message>(),
+              nullable: false,
+            ),
+          },
+          call:
+              (
+                _i1.Session session,
+                Map<String, dynamic> params,
+              ) async => (endpoints['chat'] as _i5.ChatEndpoint).sendMessage(
+                session,
+                params['message'],
+              ),
+        ),
+      },
+    );
+    connectors['user'] = _i1.EndpointConnector(
+      name: 'user',
+      endpoint: endpoints['user']!,
+      methodConnectors: {
+        'getMe': _i1.MethodConnector(
+          name: 'getMe',
+          params: {},
+          call:
+              (
+                _i1.Session session,
+                Map<String, dynamic> params,
+              ) async => (endpoints['user'] as _i6.UserEndpoint).getMe(session),
+        ),
+        'getAllAvailableUsers': _i1.MethodConnector(
+          name: 'getAllAvailableUsers',
+          params: {},
+          call:
+              (
+                _i1.Session session,
+                Map<String, dynamic> params,
+              ) async => (endpoints['user'] as _i6.UserEndpoint)
+                  .getAllAvailableUsers(session),
+        ),
+        'searchUsers': _i1.MethodConnector(
+          name: 'searchUsers',
+          params: {
+            'query': _i1.ParameterDescription(
+              name: 'query',
+              type: _i1.getType<String>(),
+              nullable: false,
+            ),
+          },
+          call:
+              (
+                _i1.Session session,
+                Map<String, dynamic> params,
+              ) async => (endpoints['user'] as _i6.UserEndpoint).searchUsers(
+                session,
+                params['query'],
+              ),
+        ),
+        'getUserPublicProfile': _i1.MethodConnector(
+          name: 'getUserPublicProfile',
+          params: {
+            'userId': _i1.ParameterDescription(
+              name: 'userId',
+              type: _i1.getType<int>(),
+              nullable: false,
+            ),
+          },
+          call:
+              (
+                _i1.Session session,
+                Map<String, dynamic> params,
+              ) async =>
+                  (endpoints['user'] as _i6.UserEndpoint).getUserPublicProfile(
+                    session,
+                    params['userId'],
+                  ),
+        ),
+      },
+    );
     connectors['greeting'] = _i1.EndpointConnector(
       name: 'greeting',
       endpoint: endpoints['greeting']!,
@@ -254,17 +478,17 @@ class Endpoints extends _i1.EndpointDispatch {
               (
                 _i1.Session session,
                 Map<String, dynamic> params,
-              ) async => (endpoints['greeting'] as _i4.GreetingEndpoint).hello(
+              ) async => (endpoints['greeting'] as _i7.GreetingEndpoint).hello(
                 session,
                 params['name'],
               ),
         ),
       },
     );
-    modules['serverpod_auth_idp'] = _i5.Endpoints()
+    modules['serverpod_auth_idp'] = _i9.Endpoints()
       ..initializeEndpoints(server);
-    modules['serverpod_auth'] = _i6.Endpoints()..initializeEndpoints(server);
-    modules['serverpod_auth_core'] = _i7.Endpoints()
+    modules['serverpod_auth'] = _i10.Endpoints()..initializeEndpoints(server);
+    modules['serverpod_auth_core'] = _i11.Endpoints()
       ..initializeEndpoints(server);
   }
 }
