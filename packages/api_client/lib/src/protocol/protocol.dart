@@ -19,11 +19,12 @@ import 'greetings/greeting.dart' as _i6;
 import 'message.dart' as _i7;
 import 'user_public_profile.dart' as _i8;
 import 'package:chatapp_client/src/protocol/channel.dart' as _i9;
-import 'package:serverpod_auth_client/serverpod_auth_client.dart' as _i10;
+import 'package:chatapp_client/src/protocol/message.dart' as _i10;
+import 'package:serverpod_auth_client/serverpod_auth_client.dart' as _i11;
 import 'package:serverpod_auth_idp_client/serverpod_auth_idp_client.dart'
-    as _i11;
-import 'package:serverpod_auth_core_client/serverpod_auth_core_client.dart'
     as _i12;
+import 'package:serverpod_auth_core_client/serverpod_auth_core_client.dart'
+    as _i13;
 export 'channel.dart';
 export 'channel_member.dart';
 export 'channel_view_state.dart';
@@ -113,18 +114,22 @@ class Protocol extends _i1.SerializationManager {
       return (data as List).map((e) => deserialize<_i9.Channel>(e)).toList()
           as T;
     }
-    if (t == List<_i10.UserInfo>) {
-      return (data as List).map((e) => deserialize<_i10.UserInfo>(e)).toList()
+    if (t == List<_i10.Message>) {
+      return (data as List).map((e) => deserialize<_i10.Message>(e)).toList()
           as T;
     }
+    if (t == List<_i11.UserInfo>) {
+      return (data as List).map((e) => deserialize<_i11.UserInfo>(e)).toList()
+          as T;
+    }
+    try {
+      return _i12.Protocol().deserialize<T>(data, t);
+    } on _i1.DeserializationTypeNotFoundException catch (_) {}
     try {
       return _i11.Protocol().deserialize<T>(data, t);
     } on _i1.DeserializationTypeNotFoundException catch (_) {}
     try {
-      return _i10.Protocol().deserialize<T>(data, t);
-    } on _i1.DeserializationTypeNotFoundException catch (_) {}
-    try {
-      return _i12.Protocol().deserialize<T>(data, t);
+      return _i13.Protocol().deserialize<T>(data, t);
     } on _i1.DeserializationTypeNotFoundException catch (_) {}
     return super.deserialize<T>(data, t);
   }
@@ -167,15 +172,15 @@ class Protocol extends _i1.SerializationManager {
       case _i8.UserPublicProfile():
         return 'UserPublicProfile';
     }
-    className = _i11.Protocol().getClassNameForObject(data);
+    className = _i12.Protocol().getClassNameForObject(data);
     if (className != null) {
       return 'serverpod_auth_idp.$className';
     }
-    className = _i10.Protocol().getClassNameForObject(data);
+    className = _i11.Protocol().getClassNameForObject(data);
     if (className != null) {
       return 'serverpod_auth.$className';
     }
-    className = _i12.Protocol().getClassNameForObject(data);
+    className = _i13.Protocol().getClassNameForObject(data);
     if (className != null) {
       return 'serverpod_auth_core.$className';
     }
@@ -211,15 +216,15 @@ class Protocol extends _i1.SerializationManager {
     }
     if (dataClassName.startsWith('serverpod_auth_idp.')) {
       data['className'] = dataClassName.substring(19);
-      return _i11.Protocol().deserializeByClassName(data);
+      return _i12.Protocol().deserializeByClassName(data);
     }
     if (dataClassName.startsWith('serverpod_auth.')) {
       data['className'] = dataClassName.substring(15);
-      return _i10.Protocol().deserializeByClassName(data);
+      return _i11.Protocol().deserializeByClassName(data);
     }
     if (dataClassName.startsWith('serverpod_auth_core.')) {
       data['className'] = dataClassName.substring(20);
-      return _i12.Protocol().deserializeByClassName(data);
+      return _i13.Protocol().deserializeByClassName(data);
     }
     return super.deserializeByClassName(data);
   }

@@ -25,6 +25,7 @@ import 'greetings/greeting.dart' as _i10;
 import 'message.dart' as _i11;
 import 'user_public_profile.dart' as _i12;
 import 'package:chatapp_server/src/generated/channel.dart' as _i13;
+import 'package:chatapp_server/src/generated/message.dart' as _i14;
 export 'channel.dart';
 export 'channel_member.dart';
 export 'channel_view_state.dart';
@@ -467,6 +468,10 @@ class Protocol extends _i1.SerializationManagerServer {
     }
     if (t == List<_i13.Channel>) {
       return (data as List).map((e) => deserialize<_i13.Channel>(e)).toList()
+          as T;
+    }
+    if (t == List<_i14.Message>) {
+      return (data as List).map((e) => deserialize<_i14.Message>(e)).toList()
           as T;
     }
     if (t == List<_i4.UserInfo>) {

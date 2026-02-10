@@ -312,6 +312,13 @@ class EndpointChat extends _i2.EndpointRef {
   @override
   String get name => 'chat';
 
+  _i3.Future<List<_i6.Message>> getPastMessages(int channelId) =>
+      caller.callServerEndpoint<List<_i6.Message>>(
+        'chat',
+        'getPastMessages',
+        {'channelId': channelId},
+      );
+
   _i3.Future<void> sendMessage(_i6.Message message) =>
       caller.callServerEndpoint<void>(
         'chat',

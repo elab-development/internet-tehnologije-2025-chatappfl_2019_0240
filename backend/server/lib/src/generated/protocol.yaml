@@ -15,6 +15,7 @@ channel:
   - removeUserFromChannel:
   - getChannels:
 chat:
+  - getPastMessages:
   - sendMessage:
 user:
   - getMe:

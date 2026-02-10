@@ -379,6 +379,25 @@ class Endpoints extends _i1.EndpointDispatch {
       name: 'chat',
       endpoint: endpoints['chat']!,
       methodConnectors: {
+        'getPastMessages': _i1.MethodConnector(
+          name: 'getPastMessages',
+          params: {
+            'channelId': _i1.ParameterDescription(
+              name: 'channelId',
+              type: _i1.getType<int>(),
+              nullable: false,
+            ),
+          },
+          call:
+              (
+                _i1.Session session,
+                Map<String, dynamic> params,
+              ) async =>
+                  (endpoints['chat'] as _i5.ChatEndpoint).getPastMessages(
+                    session,
+                    params['channelId'],
+                  ),
+        ),
         'sendMessage': _i1.MethodConnector(
           name: 'sendMessage',
           params: {

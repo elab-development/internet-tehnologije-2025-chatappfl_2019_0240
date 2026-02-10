@@ -24,6 +24,15 @@ void main() async {
   // 2. INICIJALIZACIJA SESIJE
   // Ovo proverava da li si već ulogovan kad upališ app
   await client.auth.initialize();
+  // DODAJ OVO: Otvara tunel za poruke u realnom vremenu
+  if (client.auth.isAuthenticated) {
+    try {
+      await client.openStreamingConnection();
+      debugPrint("📡 Lasta: Strim uspešno otvoren!");
+    } catch (e) {
+      debugPrint("❌ Lasta: Greška pri otvaranju strima: $e");
+    }
+  }
 
   runApp(const MyApp());
 }
