@@ -14,7 +14,7 @@ void main() async {
 
   // Tvoja lokalna IP adresa
   const String myIp = '192.168.0.37';
-  final serverUrl = 'http://$myIp:8080/';
+  const String serverUrl = 'http://10.141.252.8:8080/';
 
   // 1. SETUP KLIJENTA (Standardni način)
   client = Client(serverUrl)
