@@ -1,5 +1,7 @@
 import 'package:chatapp_flutter/screens/greetings_screen.dart';
 import 'package:chatapp_flutter/screens/sign_in_screen.dart';
+import 'package:firebase_core/firebase_core.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:serverpod_auth_idp_flutter/serverpod_auth_idp_flutter.dart';
 import 'package:serverpod_flutter/serverpod_flutter.dart';
@@ -11,6 +13,7 @@ late final Client client;
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp();
 
   // Tvoja lokalna IP adresa
   const String myIp = '192.168.0.37';

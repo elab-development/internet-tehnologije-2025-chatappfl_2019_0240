@@ -47,7 +47,10 @@ class ChatEndpoint extends Endpoint {
       );
 
       // Slanje svim korisnicima koji slušaju globalni kanal
-      session.messages.postMessage('channel_global', savedMessage);
+      session.messages.postMessage(
+        'channel_${message.channelId}',
+        savedMessage,
+      );
     } catch (e) {
       print('❌ Greška na liniji 493 (sendMessage): $e');
     }
@@ -63,10 +66,27 @@ class ChatEndpoint extends Endpoint {
       });
       print('🟢 Korisnik ${authInfo.userIdentifier} se priključio vožnji.');
     }
+    // Primer: Pretpostavljamo da korisnik može biti član više kanala
+    final userInfo = await auth.Users.findUserByIdentifier(
+      session,
+      authInfo!.userIdentifier,
+    );
+    if (userInfo != null && userInfo.id != null) {
+      final memberships = await protocol.ChannelMember.db.find(
+        session,
+        where: (t) => t.userId.equals(userInfo.id!),
+      );
+      for (final membership in memberships) {
+        final channelId = membership.channelId;
+        session.messages.addListener('channel_$channelId', (message) {
+          sendStreamMessage(session, message);
+        });
+      }
+    }
   }
 
   @override
   Future<void> streamClosed(StreamingSession session) async {
-    print('🔴 Korisnik je napustio vozilo.');
+    print('🔴 Korisnik je napustio liniju.');
   }
 }

@@ -28,6 +28,11 @@ abstract class Message
     required this.channelId,
     this.channel,
     this.status,
+    this.messageType,
+    this.mediaUrl,
+    this.mediaSizeBytes,
+    this.mediaMimeType,
+    this.mediaExpiresAt,
   });
 
   factory Message({
@@ -39,6 +44,11 @@ abstract class Message
     required int channelId,
     _i3.Channel? channel,
     String? status,
+    String? messageType,
+    String? mediaUrl,
+    int? mediaSizeBytes,
+    String? mediaMimeType,
+    DateTime? mediaExpiresAt,
   }) = _MessageImpl;
 
   factory Message.fromJson(Map<String, dynamic> jsonSerialization) {
@@ -61,6 +71,15 @@ abstract class Message
               jsonSerialization['channel'],
             ),
       status: jsonSerialization['status'] as String?,
+      messageType: jsonSerialization['messageType'] as String?,
+      mediaUrl: jsonSerialization['mediaUrl'] as String?,
+      mediaSizeBytes: jsonSerialization['mediaSizeBytes'] as int?,
+      mediaMimeType: jsonSerialization['mediaMimeType'] as String?,
+      mediaExpiresAt: jsonSerialization['mediaExpiresAt'] == null
+          ? null
+          : _i1.DateTimeJsonExtension.fromJson(
+              jsonSerialization['mediaExpiresAt'],
+            ),
     );
   }
 
@@ -85,6 +104,16 @@ abstract class Message
 
   String? status;
 
+  String? messageType;
+
+  String? mediaUrl;
+
+  int? mediaSizeBytes;
+
+  String? mediaMimeType;
+
+  DateTime? mediaExpiresAt;
+
   @override
   _i1.Table<int?> get table => t;
 
@@ -100,6 +129,11 @@ abstract class Message
     int? channelId,
     _i3.Channel? channel,
     String? status,
+    String? messageType,
+    String? mediaUrl,
+    int? mediaSizeBytes,
+    String? mediaMimeType,
+    DateTime? mediaExpiresAt,
   });
   @override
   Map<String, dynamic> toJson() {
@@ -113,6 +147,11 @@ abstract class Message
       'channelId': channelId,
       if (channel != null) 'channel': channel?.toJson(),
       if (status != null) 'status': status,
+      if (messageType != null) 'messageType': messageType,
+      if (mediaUrl != null) 'mediaUrl': mediaUrl,
+      if (mediaSizeBytes != null) 'mediaSizeBytes': mediaSizeBytes,
+      if (mediaMimeType != null) 'mediaMimeType': mediaMimeType,
+      if (mediaExpiresAt != null) 'mediaExpiresAt': mediaExpiresAt?.toJson(),
     };
   }
 
@@ -128,6 +167,11 @@ abstract class Message
       'channelId': channelId,
       if (channel != null) 'channel': channel?.toJsonForProtocol(),
       if (status != null) 'status': status,
+      if (messageType != null) 'messageType': messageType,
+      if (mediaUrl != null) 'mediaUrl': mediaUrl,
+      if (mediaSizeBytes != null) 'mediaSizeBytes': mediaSizeBytes,
+      if (mediaMimeType != null) 'mediaMimeType': mediaMimeType,
+      if (mediaExpiresAt != null) 'mediaExpiresAt': mediaExpiresAt?.toJson(),
     };
   }
 
@@ -179,6 +223,11 @@ class _MessageImpl extends Message {
     required int channelId,
     _i3.Channel? channel,
     String? status,
+    String? messageType,
+    String? mediaUrl,
+    int? mediaSizeBytes,
+    String? mediaMimeType,
+    DateTime? mediaExpiresAt,
   }) : super._(
          id: id,
          content: content,
@@ -188,6 +237,11 @@ class _MessageImpl extends Message {
          channelId: channelId,
          channel: channel,
          status: status,
+         messageType: messageType,
+         mediaUrl: mediaUrl,
+         mediaSizeBytes: mediaSizeBytes,
+         mediaMimeType: mediaMimeType,
+         mediaExpiresAt: mediaExpiresAt,
        );
 
   /// Returns a shallow copy of this [Message]
@@ -203,6 +257,11 @@ class _MessageImpl extends Message {
     int? channelId,
     Object? channel = _Undefined,
     Object? status = _Undefined,
+    Object? messageType = _Undefined,
+    Object? mediaUrl = _Undefined,
+    Object? mediaSizeBytes = _Undefined,
+    Object? mediaMimeType = _Undefined,
+    Object? mediaExpiresAt = _Undefined,
   }) {
     return Message(
       id: id is int? ? id : this.id,
@@ -213,6 +272,17 @@ class _MessageImpl extends Message {
       channelId: channelId ?? this.channelId,
       channel: channel is _i3.Channel? ? channel : this.channel?.copyWith(),
       status: status is String? ? status : this.status,
+      messageType: messageType is String? ? messageType : this.messageType,
+      mediaUrl: mediaUrl is String? ? mediaUrl : this.mediaUrl,
+      mediaSizeBytes: mediaSizeBytes is int?
+          ? mediaSizeBytes
+          : this.mediaSizeBytes,
+      mediaMimeType: mediaMimeType is String?
+          ? mediaMimeType
+          : this.mediaMimeType,
+      mediaExpiresAt: mediaExpiresAt is DateTime?
+          ? mediaExpiresAt
+          : this.mediaExpiresAt,
     );
   }
 }
@@ -245,6 +315,33 @@ class MessageUpdateTable extends _i1.UpdateTable<MessageTable> {
     table.status,
     value,
   );
+
+  _i1.ColumnValue<String, String> messageType(String? value) => _i1.ColumnValue(
+    table.messageType,
+    value,
+  );
+
+  _i1.ColumnValue<String, String> mediaUrl(String? value) => _i1.ColumnValue(
+    table.mediaUrl,
+    value,
+  );
+
+  _i1.ColumnValue<int, int> mediaSizeBytes(int? value) => _i1.ColumnValue(
+    table.mediaSizeBytes,
+    value,
+  );
+
+  _i1.ColumnValue<String, String> mediaMimeType(String? value) =>
+      _i1.ColumnValue(
+        table.mediaMimeType,
+        value,
+      );
+
+  _i1.ColumnValue<DateTime, DateTime> mediaExpiresAt(DateTime? value) =>
+      _i1.ColumnValue(
+        table.mediaExpiresAt,
+        value,
+      );
 }
 
 class MessageTable extends _i1.Table<int?> {
@@ -270,6 +367,26 @@ class MessageTable extends _i1.Table<int?> {
       'status',
       this,
     );
+    messageType = _i1.ColumnString(
+      'messageType',
+      this,
+    );
+    mediaUrl = _i1.ColumnString(
+      'mediaUrl',
+      this,
+    );
+    mediaSizeBytes = _i1.ColumnInt(
+      'mediaSizeBytes',
+      this,
+    );
+    mediaMimeType = _i1.ColumnString(
+      'mediaMimeType',
+      this,
+    );
+    mediaExpiresAt = _i1.ColumnDateTime(
+      'mediaExpiresAt',
+      this,
+    );
   }
 
   late final MessageUpdateTable updateTable;
@@ -287,6 +404,16 @@ class MessageTable extends _i1.Table<int?> {
   _i3.ChannelTable? _channel;
 
   late final _i1.ColumnString status;
+
+  late final _i1.ColumnString messageType;
+
+  late final _i1.ColumnString mediaUrl;
+
+  late final _i1.ColumnInt mediaSizeBytes;
+
+  late final _i1.ColumnString mediaMimeType;
+
+  late final _i1.ColumnDateTime mediaExpiresAt;
 
   _i2.UserInfoTable get sender {
     if (_sender != null) return _sender!;
@@ -322,6 +449,11 @@ class MessageTable extends _i1.Table<int?> {
     senderId,
     channelId,
     status,
+    messageType,
+    mediaUrl,
+    mediaSizeBytes,
+    mediaMimeType,
+    mediaExpiresAt,
   ];
 
   @override

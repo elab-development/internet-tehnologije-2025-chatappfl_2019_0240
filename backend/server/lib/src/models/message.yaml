@@ -6,3 +6,10 @@ fields:
   sender: module:auth:UserInfo?, relation
   channel: Channel?, relation
   status: String?
+  messageType: String?
+  mediaUrl: String?
+  mediaSizeBytes: int?
+  mediaMimeType: String?
+  mediaExpiresAt: DateTime?
+
+ 

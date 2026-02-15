@@ -25,6 +25,11 @@ abstract class Message implements _i1.SerializableModel {
     required this.channelId,
     this.channel,
     this.status,
+    this.messageType,
+    this.mediaUrl,
+    this.mediaSizeBytes,
+    this.mediaMimeType,
+    this.mediaExpiresAt,
   });
 
   factory Message({
@@ -36,6 +41,11 @@ abstract class Message implements _i1.SerializableModel {
     required int channelId,
     _i3.Channel? channel,
     String? status,
+    String? messageType,
+    String? mediaUrl,
+    int? mediaSizeBytes,
+    String? mediaMimeType,
+    DateTime? mediaExpiresAt,
   }) = _MessageImpl;
 
   factory Message.fromJson(Map<String, dynamic> jsonSerialization) {
@@ -58,6 +68,15 @@ abstract class Message implements _i1.SerializableModel {
               jsonSerialization['channel'],
             ),
       status: jsonSerialization['status'] as String?,
+      messageType: jsonSerialization['messageType'] as String?,
+      mediaUrl: jsonSerialization['mediaUrl'] as String?,
+      mediaSizeBytes: jsonSerialization['mediaSizeBytes'] as int?,
+      mediaMimeType: jsonSerialization['mediaMimeType'] as String?,
+      mediaExpiresAt: jsonSerialization['mediaExpiresAt'] == null
+          ? null
+          : _i1.DateTimeJsonExtension.fromJson(
+              jsonSerialization['mediaExpiresAt'],
+            ),
     );
   }
 
@@ -80,6 +99,16 @@ abstract class Message implements _i1.SerializableModel {
 
   String? status;
 
+  String? messageType;
+
+  String? mediaUrl;
+
+  int? mediaSizeBytes;
+
+  String? mediaMimeType;
+
+  DateTime? mediaExpiresAt;
+
   /// Returns a shallow copy of this [Message]
   /// with some or all fields replaced by the given arguments.
   @_i1.useResult
@@ -92,6 +121,11 @@ abstract class Message implements _i1.SerializableModel {
     int? channelId,
     _i3.Channel? channel,
     String? status,
+    String? messageType,
+    String? mediaUrl,
+    int? mediaSizeBytes,
+    String? mediaMimeType,
+    DateTime? mediaExpiresAt,
   });
   @override
   Map<String, dynamic> toJson() {
@@ -105,6 +139,11 @@ abstract class Message implements _i1.SerializableModel {
       'channelId': channelId,
       if (channel != null) 'channel': channel?.toJson(),
       if (status != null) 'status': status,
+      if (messageType != null) 'messageType': messageType,
+      if (mediaUrl != null) 'mediaUrl': mediaUrl,
+      if (mediaSizeBytes != null) 'mediaSizeBytes': mediaSizeBytes,
+      if (mediaMimeType != null) 'mediaMimeType': mediaMimeType,
+      if (mediaExpiresAt != null) 'mediaExpiresAt': mediaExpiresAt?.toJson(),
     };
   }
 
@@ -126,6 +165,11 @@ class _MessageImpl extends Message {
     required int channelId,
     _i3.Channel? channel,
     String? status,
+    String? messageType,
+    String? mediaUrl,
+    int? mediaSizeBytes,
+    String? mediaMimeType,
+    DateTime? mediaExpiresAt,
   }) : super._(
          id: id,
          content: content,
@@ -135,6 +179,11 @@ class _MessageImpl extends Message {
          channelId: channelId,
          channel: channel,
          status: status,
+         messageType: messageType,
+         mediaUrl: mediaUrl,
+         mediaSizeBytes: mediaSizeBytes,
+         mediaMimeType: mediaMimeType,
+         mediaExpiresAt: mediaExpiresAt,
        );
 
   /// Returns a shallow copy of this [Message]
@@ -150,6 +199,11 @@ class _MessageImpl extends Message {
     int? channelId,
     Object? channel = _Undefined,
     Object? status = _Undefined,
+    Object? messageType = _Undefined,
+    Object? mediaUrl = _Undefined,
+    Object? mediaSizeBytes = _Undefined,
+    Object? mediaMimeType = _Undefined,
+    Object? mediaExpiresAt = _Undefined,
   }) {
     return Message(
       id: id is int? ? id : this.id,
@@ -160,6 +214,17 @@ class _MessageImpl extends Message {
       channelId: channelId ?? this.channelId,
       channel: channel is _i3.Channel? ? channel : this.channel?.copyWith(),
       status: status is String? ? status : this.status,
+      messageType: messageType is String? ? messageType : this.messageType,
+      mediaUrl: mediaUrl is String? ? mediaUrl : this.mediaUrl,
+      mediaSizeBytes: mediaSizeBytes is int?
+          ? mediaSizeBytes
+          : this.mediaSizeBytes,
+      mediaMimeType: mediaMimeType is String?
+          ? mediaMimeType
+          : this.mediaMimeType,
+      mediaExpiresAt: mediaExpiresAt is DateTime?
+          ? mediaExpiresAt
+          : this.mediaExpiresAt,
     );
   }
 }

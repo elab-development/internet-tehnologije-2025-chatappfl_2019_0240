@@ -30,15 +30,22 @@ dependencies:
   cupertino_icons: ^1.0.5
   flutter:
     sdk: flutter
+
+  #za fcm
+  firebase_core: ^3.10.0
+  firebase_messaging: ^15.2.0
+
+  flutter_local_notifications: ^18.0.0
+
   
   # POPRAVLJENA PUTANJA DO KLIJENTA
   chatapp_client:
     path: ../../packages/api_client
-    
-  serverpod_flutter: 3.1.1
-  serverpod_auth_idp_flutter: 3.1.1
+
+  serverpod_flutter: ^3.3.1
+  serverpod_auth_idp_flutter: ^3.3.1
   # Dodajemo i ovo jer će ti trebati za sesije
-  serverpod_auth_shared_flutter: 3.1.1
+  serverpod_auth_shared_flutter: ^3.3.1
 
 dev_dependencies:
   flutter_lints: '>=3.0.0 <7.0.0'

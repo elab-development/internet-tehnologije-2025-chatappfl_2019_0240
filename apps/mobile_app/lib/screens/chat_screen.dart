@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:chatapp_flutter/widgets/chat/chatappbar.dart';
 import 'package:chatapp_flutter/widgets/chat/message_buble.dart';
 import 'package:flutter/material.dart';
@@ -27,6 +29,8 @@ class _ChatScreenState extends State<ChatScreen> {
     super.initState();
     _initializeChat();
   }
+
+  late final StreamSubscription _streamSubscription;
 
   Future<void> _initializeChat() async {
     try {
@@ -64,7 +68,7 @@ class _ChatScreenState extends State<ChatScreen> {
   }
 
   void _setupStreamListener() {
-    client.chat.stream.listen((message) {
+    _streamSubscription = client.chat.stream.listen((message) {
       if (message is Message && message.channelId == widget.channel.id) {
         if (mounted) {
           setState(() {
@@ -133,9 +137,11 @@ class _ChatScreenState extends State<ChatScreen> {
     );
   }
 
+  //dispose: sprečavamo memory leaking jer TextEditingController koristi resurse
   @override
   void dispose() {
     _messageController.dispose();
+    _streamSubscription.cancel();
     super.dispose();
   }
 }

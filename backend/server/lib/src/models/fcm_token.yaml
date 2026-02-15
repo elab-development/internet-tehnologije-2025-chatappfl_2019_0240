@@ -4,6 +4,9 @@ fields:
   user: module:auth:UserInfo?, relation
   token: String
   deviceType: String
+  createdAt: DateTime
+  pushedAt: DateTime?
+  pushService: String
 
 indexes:
   fcm_token_user_idx:
