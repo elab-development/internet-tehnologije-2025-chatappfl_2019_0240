@@ -21,6 +21,9 @@ abstract class FcmToken implements _i1.SerializableModel {
     this.user,
     required this.token,
     required this.deviceType,
+    required this.createdAt,
+    this.pushedAt,
+    required this.pushService,
   });
 
   factory FcmToken({
@@ -29,6 +32,9 @@ abstract class FcmToken implements _i1.SerializableModel {
     _i2.UserInfo? user,
     required String token,
     required String deviceType,
+    required DateTime createdAt,
+    DateTime? pushedAt,
+    required String pushService,
   }) = _FcmTokenImpl;
 
   factory FcmToken.fromJson(Map<String, dynamic> jsonSerialization) {
@@ -40,6 +46,13 @@ abstract class FcmToken implements _i1.SerializableModel {
           : _i3.Protocol().deserialize<_i2.UserInfo>(jsonSerialization['user']),
       token: jsonSerialization['token'] as String,
       deviceType: jsonSerialization['deviceType'] as String,
+      createdAt: _i1.DateTimeJsonExtension.fromJson(
+        jsonSerialization['createdAt'],
+      ),
+      pushedAt: jsonSerialization['pushedAt'] == null
+          ? null
+          : _i1.DateTimeJsonExtension.fromJson(jsonSerialization['pushedAt']),
+      pushService: jsonSerialization['pushService'] as String,
     );
   }
 
@@ -56,6 +69,12 @@ abstract class FcmToken implements _i1.SerializableModel {
 
   String deviceType;
 
+  DateTime createdAt;
+
+  DateTime? pushedAt;
+
+  String pushService;
+
   /// Returns a shallow copy of this [FcmToken]
   /// with some or all fields replaced by the given arguments.
   @_i1.useResult
@@ -65,6 +84,9 @@ abstract class FcmToken implements _i1.SerializableModel {
     _i2.UserInfo? user,
     String? token,
     String? deviceType,
+    DateTime? createdAt,
+    DateTime? pushedAt,
+    String? pushService,
   });
   @override
   Map<String, dynamic> toJson() {
@@ -75,6 +97,9 @@ abstract class FcmToken implements _i1.SerializableModel {
       if (user != null) 'user': user?.toJson(),
       'token': token,
       'deviceType': deviceType,
+      'createdAt': createdAt.toJson(),
+      if (pushedAt != null) 'pushedAt': pushedAt?.toJson(),
+      'pushService': pushService,
     };
   }
 
@@ -93,12 +118,18 @@ class _FcmTokenImpl extends FcmToken {
     _i2.UserInfo? user,
     required String token,
     required String deviceType,
+    required DateTime createdAt,
+    DateTime? pushedAt,
+    required String pushService,
   }) : super._(
          id: id,
          userId: userId,
          user: user,
          token: token,
          deviceType: deviceType,
+         createdAt: createdAt,
+         pushedAt: pushedAt,
+         pushService: pushService,
        );
 
   /// Returns a shallow copy of this [FcmToken]
@@ -111,6 +142,9 @@ class _FcmTokenImpl extends FcmToken {
     Object? user = _Undefined,
     String? token,
     String? deviceType,
+    DateTime? createdAt,
+    Object? pushedAt = _Undefined,
+    String? pushService,
   }) {
     return FcmToken(
       id: id is int? ? id : this.id,
@@ -118,6 +152,9 @@ class _FcmTokenImpl extends FcmToken {
       user: user is _i2.UserInfo? ? user : this.user?.copyWith(),
       token: token ?? this.token,
       deviceType: deviceType ?? this.deviceType,
+      createdAt: createdAt ?? this.createdAt,
+      pushedAt: pushedAt is DateTime? ? pushedAt : this.pushedAt,
+      pushService: pushService ?? this.pushService,
     );
   }
 }

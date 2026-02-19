@@ -21,7 +21,17 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   void initState() {
     super.initState();
+    _ensureStreamOpen();
     _loadChannels();
+  }
+
+  Future<void> _ensureStreamOpen() async {
+    try {
+      await client.openStreamingConnection();
+      debugPrint("📡 HomeScreen: Strim otvoren!");
+    } catch (e) {
+      debugPrint("ℹ️ HomeScreen: Stream već otvoren ili greška: $e");
+    }
   }
 
   // Funkcija koja povlači kanale direktno preko tvog novog endpointa

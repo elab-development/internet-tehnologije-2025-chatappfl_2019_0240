@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:chatapp_flutter/screens/greetings_screen.dart';
 import 'package:chatapp_flutter/screens/sign_in_screen.dart';
 import 'package:firebase_core/firebase_core.dart';
@@ -5,11 +7,15 @@ import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:serverpod_auth_idp_flutter/serverpod_auth_idp_flutter.dart';
 import 'package:serverpod_flutter/serverpod_flutter.dart';
-import 'package:serverpod_auth_shared_flutter/serverpod_auth_shared_flutter.dart';
 import 'package:chatapp_client/chatapp_client.dart';
 import 'screens/home_screen.dart'; // Tvoj novi ekran
 
 late final Client client;
+late final FlutterAuthSessionManager authSessionManager;
+
+// Globalni broadcast stream za chat poruke
+// Dozvoljava više listenera (npr. više chat soba otvorenih)
+final chatMessageController = StreamController<dynamic>.broadcast();
 
 /// FCM Token retry logika - pokušava do 5 puta sa rastućim pauzama
 
@@ -50,22 +56,24 @@ void main() async {
     // TODO: Pošalji novi token backendu
   });
 
-  // Tvoja lokalna IP adresa
-  const String myIp = '192.168.0.37';
-  const String serverUrl = 'http://10.141.252.8:8080/';
+  // Tvoja lokalna IP adresa (LAN IP iMac-a)
+  const String serverUrl = 'http://192.168.0.37:8080/';
 
   // 1. SETUP KLIJENTA (Standardni način)
+  authSessionManager = FlutterAuthSessionManager();
   client = Client(serverUrl)
     ..connectivityMonitor = FlutterConnectivityMonitor()
-    ..authSessionManager = FlutterAuthSessionManager();
+    ..authSessionManager = authSessionManager;
 
   // 2. INICIJALIZACIJA SESIJE
-  // Ovo proverava da li si već ulogovan kad upališ app
   await client.auth.initialize();
-  // DODAJ OVO: Otvara tunel za poruke u realnom vremenu
+
+  // Otvori stream ako je korisnik već ulogovan
   if (client.auth.isAuthenticated) {
     try {
       await client.openStreamingConnection();
+      // Prosledi sve poruke u globalni broadcast stream
+      client.chat.stream.listen((msg) => chatMessageController.add(msg));
       debugPrint("📡 Lasta: Strim uspešno otvoren!");
     } catch (e) {
       debugPrint("❌ Lasta: Greška pri otvaranju strima: $e");

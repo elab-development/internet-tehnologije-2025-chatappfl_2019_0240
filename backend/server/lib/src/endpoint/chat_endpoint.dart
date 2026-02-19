@@ -46,7 +46,10 @@ class ChatEndpoint extends Endpoint {
         message,
       );
 
-      // Slanje svim korisnicima koji slušaju globalni kanal
+      // Dodajemo sender info da klijent odmah ima ime
+      savedMessage.sender = userInfo;
+
+      // Slanje svim korisnicima koji slušaju kanal
       session.messages.postMessage(
         'channel_${message.channelId}',
         savedMessage,

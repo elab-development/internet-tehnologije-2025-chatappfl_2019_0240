@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:chatapp_client/chatapp_client.dart';
 import '../../main.dart'; // Da bi video 'client'
 import '../../const/colors.dart';
 import 'package:serverpod_auth_client/serverpod_auth_client.dart' as auth;

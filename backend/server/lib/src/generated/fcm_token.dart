@@ -8,7 +8,6 @@
 // ignore_for_file: type_literal_in_constant_pattern
 // ignore_for_file: use_super_parameters
 // ignore_for_file: invalid_use_of_internal_member
-
 // ignore_for_file: unnecessary_null_comparison
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
@@ -24,6 +23,9 @@ abstract class FcmToken
     this.user,
     required this.token,
     required this.deviceType,
+    required this.createdAt,
+    this.pushedAt,
+    required this.pushService,
   });
 
   factory FcmToken({
@@ -32,6 +34,9 @@ abstract class FcmToken
     _i2.UserInfo? user,
     required String token,
     required String deviceType,
+    required DateTime createdAt,
+    DateTime? pushedAt,
+    required String pushService,
   }) = _FcmTokenImpl;
 
   factory FcmToken.fromJson(Map<String, dynamic> jsonSerialization) {
@@ -43,6 +48,13 @@ abstract class FcmToken
           : _i3.Protocol().deserialize<_i2.UserInfo>(jsonSerialization['user']),
       token: jsonSerialization['token'] as String,
       deviceType: jsonSerialization['deviceType'] as String,
+      createdAt: _i1.DateTimeJsonExtension.fromJson(
+        jsonSerialization['createdAt'],
+      ),
+      pushedAt: jsonSerialization['pushedAt'] == null
+          ? null
+          : _i1.DateTimeJsonExtension.fromJson(jsonSerialization['pushedAt']),
+      pushService: jsonSerialization['pushService'] as String,
     );
   }
 
@@ -61,6 +73,12 @@ abstract class FcmToken
 
   String deviceType;
 
+  DateTime createdAt;
+
+  DateTime? pushedAt;
+
+  String pushService;
+
   @override
   _i1.Table<int?> get table => t;
 
@@ -73,6 +91,9 @@ abstract class FcmToken
     _i2.UserInfo? user,
     String? token,
     String? deviceType,
+    DateTime? createdAt,
+    DateTime? pushedAt,
+    String? pushService,
   });
   @override
   Map<String, dynamic> toJson() {
@@ -83,6 +104,9 @@ abstract class FcmToken
       if (user != null) 'user': user?.toJson(),
       'token': token,
       'deviceType': deviceType,
+      'createdAt': createdAt.toJson(),
+      if (pushedAt != null) 'pushedAt': pushedAt?.toJson(),
+      'pushService': pushService,
     };
   }
 
@@ -95,6 +119,9 @@ abstract class FcmToken
       if (user != null) 'user': user?.toJsonForProtocol(),
       'token': token,
       'deviceType': deviceType,
+      'createdAt': createdAt.toJson(),
+      if (pushedAt != null) 'pushedAt': pushedAt?.toJson(),
+      'pushService': pushService,
     };
   }
 
@@ -137,12 +164,18 @@ class _FcmTokenImpl extends FcmToken {
     _i2.UserInfo? user,
     required String token,
     required String deviceType,
+    required DateTime createdAt,
+    DateTime? pushedAt,
+    required String pushService,
   }) : super._(
          id: id,
          userId: userId,
          user: user,
          token: token,
          deviceType: deviceType,
+         createdAt: createdAt,
+         pushedAt: pushedAt,
+         pushService: pushService,
        );
 
   /// Returns a shallow copy of this [FcmToken]
@@ -155,6 +188,9 @@ class _FcmTokenImpl extends FcmToken {
     Object? user = _Undefined,
     String? token,
     String? deviceType,
+    DateTime? createdAt,
+    Object? pushedAt = _Undefined,
+    String? pushService,
   }) {
     return FcmToken(
       id: id is int? ? id : this.id,
@@ -162,6 +198,9 @@ class _FcmTokenImpl extends FcmToken {
       user: user is _i2.UserInfo? ? user : this.user?.copyWith(),
       token: token ?? this.token,
       deviceType: deviceType ?? this.deviceType,
+      createdAt: createdAt ?? this.createdAt,
+      pushedAt: pushedAt is DateTime? ? pushedAt : this.pushedAt,
+      pushService: pushService ?? this.pushService,
     );
   }
 }
@@ -183,6 +222,23 @@ class FcmTokenUpdateTable extends _i1.UpdateTable<FcmTokenTable> {
     table.deviceType,
     value,
   );
+
+  _i1.ColumnValue<DateTime, DateTime> createdAt(DateTime value) =>
+      _i1.ColumnValue(
+        table.createdAt,
+        value,
+      );
+
+  _i1.ColumnValue<DateTime, DateTime> pushedAt(DateTime? value) =>
+      _i1.ColumnValue(
+        table.pushedAt,
+        value,
+      );
+
+  _i1.ColumnValue<String, String> pushService(String value) => _i1.ColumnValue(
+    table.pushService,
+    value,
+  );
 }
 
 class FcmTokenTable extends _i1.Table<int?> {
@@ -200,6 +256,18 @@ class FcmTokenTable extends _i1.Table<int?> {
       'deviceType',
       this,
     );
+    createdAt = _i1.ColumnDateTime(
+      'createdAt',
+      this,
+    );
+    pushedAt = _i1.ColumnDateTime(
+      'pushedAt',
+      this,
+    );
+    pushService = _i1.ColumnString(
+      'pushService',
+      this,
+    );
   }
 
   late final FcmTokenUpdateTable updateTable;
@@ -211,6 +279,12 @@ class FcmTokenTable extends _i1.Table<int?> {
   late final _i1.ColumnString token;
 
   late final _i1.ColumnString deviceType;
+
+  late final _i1.ColumnDateTime createdAt;
+
+  late final _i1.ColumnDateTime pushedAt;
+
+  late final _i1.ColumnString pushService;
 
   _i2.UserInfoTable get user {
     if (_user != null) return _user!;
@@ -231,6 +305,9 @@ class FcmTokenTable extends _i1.Table<int?> {
     userId,
     token,
     deviceType,
+    createdAt,
+    pushedAt,
+    pushService,
   ];
 
   @override

@@ -30,25 +30,16 @@ class _ChatScreenState extends State<ChatScreen> {
     _initializeChat();
   }
 
-  late final StreamSubscription _streamSubscription;
+  StreamSubscription? _streamSubscription;
 
   Future<void> _initializeChat() async {
     try {
-      // 1. POKUŠAJ OTVARANJA STRIMA (Bez isStreamingConnectionOpen provere)
-      try {
-        await client.openStreamingConnection();
-        debugPrint("📡 Lasta: Strim otvoren!");
-      } catch (e) {
-        // Ako je već otvoren ili postoji greška, samo nastavi dalje
-        debugPrint("ℹ️ Napomena o strimu: $e");
-      }
-
       final myUserInfo = await client.user.getMe();
       if (myUserInfo != null) {
         _currentUserId = myUserInfo.id;
       }
 
-      // 2. ISTORIJA
+      // Istorija poruka
       final history = await client.chat.getPastMessages(widget.channel.id!);
 
       if (mounted) {
@@ -68,6 +59,8 @@ class _ChatScreenState extends State<ChatScreen> {
   }
 
   void _setupStreamListener() {
+    // Otkaži prethodni listener ako postoji
+    _streamSubscription?.cancel();
     _streamSubscription = client.chat.stream.listen((message) {
       if (message is Message && message.channelId == widget.channel.id) {
         if (mounted) {
@@ -141,7 +134,7 @@ class _ChatScreenState extends State<ChatScreen> {
   @override
   void dispose() {
     _messageController.dispose();
-    _streamSubscription.cancel();
+    _streamSubscription?.cancel();
     super.dispose();
   }
 }
