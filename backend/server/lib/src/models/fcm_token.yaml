@@ -10,5 +10,13 @@ fields:
 
 indexes:
   fcm_token_user_idx:
-    fields: userId # Mora userId jer je to kolona u bazi koju pravi relation
+    fields: userId
+    unique: false
+
+  fcm_token_user_token_unique:
+    fields: userId, token
+    unique: true
+
+  fcm_token_token_idx:
+    fields: token
     unique: false

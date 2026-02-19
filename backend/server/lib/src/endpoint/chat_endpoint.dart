@@ -1,6 +1,7 @@
 import 'package:serverpod/serverpod.dart';
 import 'package:serverpod_auth_server/serverpod_auth_server.dart' as auth;
 import '../generated/protocol.dart' as protocol;
+import 'fcm_endpoint.dart';
 
 class ChatEndpoint extends Endpoint {
   @override
@@ -49,11 +50,33 @@ class ChatEndpoint extends Endpoint {
       // Dodajemo sender info da klijent odmah ima ime
       savedMessage.sender = userInfo;
 
-      // Slanje svim korisnicima koji slušaju kanal
+      // Slanje svim korisnicima koji slušaju kanal (realtime stream)
       session.messages.postMessage(
         'channel_${message.channelId}',
         savedMessage,
       );
+
+      // FCM push notifikacija svim članovima kanala (osim pošiljaoca)
+      final channel = await protocol.Channel.db.findById(
+        session,
+        message.channelId,
+      );
+      if (channel != null) {
+        final senderName =
+            userInfo.userName ?? userInfo.email ?? 'Nepoznat korisnik';
+        final preview = message.content.length > 100
+            ? '${message.content.substring(0, 100)}...'
+            : message.content;
+
+        await FcmEndpoint.pushToChannelMembers(
+          session,
+          message.channelId,
+          userInfo.id!,
+          channel.name,
+          preview,
+          senderName,
+        );
+      }
     } catch (e) {
       print('❌ Greška na liniji 493 (sendMessage): $e');
     }
@@ -62,17 +85,17 @@ class ChatEndpoint extends Endpoint {
   @override
   Future<void> streamOpened(StreamingSession session) async {
     final authInfo = await session.authenticated;
-    if (authInfo != null) {
-      // Slušamo poruke i prosleđujemo ih klijentu
-      session.messages.addListener('channel_global', (message) {
-        sendStreamMessage(session, message);
-      });
-      print('🟢 Korisnik ${authInfo.userIdentifier} se priključio vožnji.');
-    }
-    // Primer: Pretpostavljamo da korisnik može biti član više kanala
+    if (authInfo == null) return;
+
+    session.messages.addListener('channel_global', (message) {
+      sendStreamMessage(session, message);
+    });
+    print('🟢 Korisnik ${authInfo.userIdentifier} se priključio vožnji.');
+
+    // Pretplatimo se samo na kanale kojih je korisnik član
     final userInfo = await auth.Users.findUserByIdentifier(
       session,
-      authInfo!.userIdentifier,
+      authInfo.userIdentifier,
     );
     if (userInfo != null && userInfo.id != null) {
       final memberships = await protocol.ChannelMember.db.find(

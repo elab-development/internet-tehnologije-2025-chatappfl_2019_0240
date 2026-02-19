@@ -12,6 +12,7 @@ dependencies:
   chatapp_client:
     path: ../../packages/api_client # popravljena putanja
   http: ^1.6.0
+  googleapis_auth: ^1.4.0
 
 dev_dependencies:
   lints: '>=3.0.0 <7.0.0'

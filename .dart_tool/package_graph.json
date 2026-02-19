@@ -38,6 +38,7 @@
       "version": "0.0.0",
       "dependencies": [
         "chatapp_client",
+        "googleapis_auth",
         "http",
         "serverpod",
         "serverpod_auth_idp_server",
@@ -155,6 +156,17 @@
       "name": "lints",
       "version": "6.1.0",
       "dependencies": []
+    },
+    {
+      "name": "googleapis_auth",
+      "version": "1.6.0",
+      "dependencies": [
+        "args",
+        "crypto",
+        "google_identity_services_web",
+        "http",
+        "http_parser"
+      ]
     },
     {
       "name": "http",
@@ -786,11 +798,6 @@
       ]
     },
     {
-      "name": "web",
-      "version": "1.1.1",
-      "dependencies": []
-    },
-    {
       "name": "http_parser",
       "version": "4.1.2",
       "dependencies": [
@@ -799,6 +806,26 @@
         "string_scanner",
         "typed_data"
       ]
+    },
+    {
+      "name": "google_identity_services_web",
+      "version": "0.3.3+1",
+      "dependencies": [
+        "meta",
+        "web"
+      ]
+    },
+    {
+      "name": "crypto",
+      "version": "3.0.7",
+      "dependencies": [
+        "typed_data"
+      ]
+    },
+    {
+      "name": "web",
+      "version": "1.1.1",
+      "dependencies": []
     },
     {
       "name": "serverpod_shared",
@@ -858,17 +885,6 @@
       ]
     },
     {
-      "name": "googleapis_auth",
-      "version": "2.0.0",
-      "dependencies": [
-        "args",
-        "crypto",
-        "google_identity_services_web",
-        "http",
-        "http_parser"
-      ]
-    },
-    {
       "name": "googleapis",
       "version": "16.0.0",
       "dependencies": [
@@ -880,13 +896,6 @@
       "name": "email_validator",
       "version": "3.0.0",
       "dependencies": []
-    },
-    {
-      "name": "crypto",
-      "version": "3.0.7",
-      "dependencies": [
-        "typed_data"
-      ]
     },
     {
       "name": "sign_in_with_apple_server",
@@ -1494,14 +1503,6 @@
         "meta",
         "pointycastle",
         "quiver"
-      ]
-    },
-    {
-      "name": "google_identity_services_web",
-      "version": "0.3.3+1",
-      "dependencies": [
-        "meta",
-        "web"
       ]
     },
     {

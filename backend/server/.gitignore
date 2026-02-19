@@ -17,3 +17,4 @@ config/passwords.yaml
 # Firebase service account key for Firebase auth
 config/firebase_service_account_key.json
 /home/djordje/programiranje/chat493_workspace/apps/mobile_app/android/app/google-services.json
+/home/djordje/programiranje/chat493_workspace/chatapp493-firebase-adminsdk-fbsvc-c1574ac9cd.json
