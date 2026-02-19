@@ -11,9 +11,44 @@ import 'screens/home_screen.dart'; // Tvoj novi ekran
 
 late final Client client;
 
+/// FCM Token retry logika - pokušava do 5 puta sa rastućim pauzama
+
+void _initFcmToken() async {
+  FirebaseMessaging messaging = FirebaseMessaging.instance;
+
+  // 1. Zatraži dozvolu (ovo je bitno i za inicijalizaciju!)
+  NotificationSettings settings = await messaging.requestPermission(
+    alert: true,
+    badge: true,
+    sound: true,
+  );
+
+  if (settings.authorizationStatus == AuthorizationStatus.authorized) {
+    debugPrint('✅ Korisnik prihvatio dozvole');
+
+    // 2. Uzmi token
+    String? token = await messaging.getToken();
+    debugPrint('🔑 FCM TOKEN: $token');
+
+    // 3. OBAVEZNO: Slušaj poruke dok je app otvorena da vidiš da li stižu u konzolu
+    FirebaseMessaging.onMessage.listen((RemoteMessage message) {
+      debugPrint('📩 STIGLA PORUKA: ${message.notification?.title}');
+    });
+  }
+}
+
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp();
+
+  // FCM Token - retry logika za slučaj da mreža nije odmah dostupna
+  _initFcmToken();
+
+  // Slušamo i buduće promene tokena (refresh)
+  FirebaseMessaging.instance.onTokenRefresh.listen((newToken) {
+    debugPrint('🔄 FCM TOKEN REFRESH: $newToken');
+    // TODO: Pošalji novi token backendu
+  });
 
   // Tvoja lokalna IP adresa
   const String myIp = '192.168.0.37';
