@@ -8,6 +8,66 @@ import 'package:serverpod_auth_idp_flutter/widgets.dart';
 ///
 /// Displays email field and optional terms checkbox for starting registration.
 /// After submission, user will proceed to set password screen.
+class TermsAndPrivacyTextSrpski extends StatelessWidget {
+  final VoidCallback? onTermsAndConditionsPressed;
+  final VoidCallback? onPrivacyPolicyPressed;
+  final bool isChecked;
+  final ValueChanged<bool?>? onCheckboxChanged;
+
+  const TermsAndPrivacyTextSrpski({
+    super.key,
+    this.onTermsAndConditionsPressed,
+    this.onPrivacyPolicyPressed,
+    required this.isChecked,
+    this.onCheckboxChanged,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      children: [
+        Checkbox(
+          value: isChecked,
+          onChanged: onCheckboxChanged,
+        ),
+        Expanded(
+          child: Wrap(
+            children: [
+              const Text('Prihvatam '),
+              GestureDetector(
+                onTap: onTermsAndConditionsPressed,
+                child: const Text(
+                  'uslove korišćenja',
+                  style: TextStyle(
+                    decoration: TextDecoration.underline,
+                    color: Colors.blue,
+                  ),
+                ),
+              ),
+              const Text(' i '),
+              GestureDetector(
+                onTap: onPrivacyPolicyPressed,
+                child: const Text(
+                  'politiku privatnosti',
+                  style: TextStyle(
+                    decoration: TextDecoration.underline,
+                    color: Colors.blue,
+                  ),
+                ),
+              ),
+              const Text('.'),
+            ],
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+/// Registration form widget for email authentication.
+///
+/// Displays email field and optional terms checkbox for starting registration.
+/// After submission, user will proceed to set password screen.
 class StartRegistrationForm extends StatelessWidget {
   /// The controller that manages authentication state and logic.
   final EmailAuthController controller;
@@ -22,11 +82,15 @@ class StartRegistrationForm extends StatelessWidget {
   /// If not provided, defaults to null.
   final VoidCallback? onPrivacyPolicyPressed;
 
+  /// Prikaz auth koda korisniku (opciono)
+  final String? authCode;
+
   /// Creates a [StartRegistrationForm] widget.
   const StartRegistrationForm({
     required this.controller,
     this.onTermsAndConditionsPressed,
     this.onPrivacyPolicyPressed,
+    this.authCode,
     super.key,
   });
 
@@ -39,16 +103,16 @@ class StartRegistrationForm extends StatelessWidget {
         onTermsAndConditionsPressed != null || onPrivacyPolicyPressed != null;
 
     return FormStandardLayout(
-      title: 'Prijava preko emaila',
+      title: 'Registracija preko emaila',
       content: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           EmailTextField(controller: controller),
           if (hasTermsAndConditions) ...[
-            const Expanded(child: SizedBox.shrink()),
+            const SizedBox(height: 16),
             SizedBox(
               height: 40,
-              child: TermsAndPrivacyText(
+              child: TermsAndPrivacyTextSrpski(
                 onTermsAndConditionsPressed: onTermsAndConditionsPressed,
                 onPrivacyPolicyPressed: onPrivacyPolicyPressed,
                 isChecked: controller.legalNoticeAcceptedNotifier.value,
@@ -58,6 +122,19 @@ class StartRegistrationForm extends StatelessWidget {
               ),
             ),
             smallGap,
+          ],
+          if (authCode != null) ...[
+            const SizedBox(height: 16),
+            Text(
+              'Vaš kod za potvrdu naloga je:',
+              style: TextStyle(fontWeight: FontWeight.bold),
+              textAlign: TextAlign.center,
+            ),
+            SelectableText(
+              authCode!,
+              style: TextStyle(fontSize: 20, color: Colors.blue),
+              textAlign: TextAlign.center,
+            ),
           ],
         ],
       ),
