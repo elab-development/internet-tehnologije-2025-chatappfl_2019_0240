@@ -8,6 +8,7 @@ import 'package:flutter/material.dart';
 import 'package:serverpod_auth_idp_flutter/serverpod_auth_idp_flutter.dart';
 import 'package:serverpod_flutter/serverpod_flutter.dart';
 import 'package:chatapp_client/chatapp_client.dart';
+import 'package:serverpod_auth_shared_flutter/serverpod_auth_shared_flutter.dart';
 import 'screens/home_screen.dart'; // Tvoj novi ekran
 
 late final Client client;
@@ -45,39 +46,42 @@ void _initFcmToken() async {
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await Firebase.initializeApp();
 
-  // FCM Token - retry logika za slučaj da mreža nije odmah dostupna
-  _initFcmToken();
+  try {
+    await Firebase.initializeApp();
+    // FCM Token logic
+    _initFcmToken();
 
-  // Slušamo i buduće promene tokena (refresh)
-  FirebaseMessaging.instance.onTokenRefresh.listen((newToken) {
-    debugPrint('🔄 FCM TOKEN REFRESH: $newToken');
-    // TODO: Pošalji novi token backendu
-  });
+    // Slušamo i buduće promene tokena (refresh)
+    FirebaseMessaging.instance.onTokenRefresh.listen((newToken) {
+      debugPrint('🔄 FCM TOKEN REFRESH: $newToken');
+      // TODO: Pošalji novi token backendu
+    });
+  } catch (e) {
+    debugPrint('⚠️ Firebase initializacija preskočena ili neuspela: $e');
+  }
 
-  // Tvoja lokalna IP adresa (LAN IP iMac-a)
-  const String serverUrl = 'http://192.168.0.37:8080/';
+  // Tvoja Produkciona Cloud Run adresa (bez trailing slash-a radi sigurnosti)
+  const String serverUrl = 'https://chatapp-server-r7tslmd2ja-ew.a.run.app';
 
-  // 1. SETUP KLIJENTA (Standardni način)
-  authSessionManager = FlutterAuthSessionManager();
-  client = Client(serverUrl)
-    ..connectivityMonitor = FlutterConnectivityMonitor()
-    ..authSessionManager = authSessionManager;
+  try {
+    // 1. SETUP KLIJENTA
+    authSessionManager = FlutterAuthSessionManager();
+    client = Client('$serverUrl/')
+      ..connectivityMonitor = FlutterConnectivityMonitor()
+      ..authSessionManager = authSessionManager;
 
-  // 2. INICIJALIZACIJA SESIJE
-  await client.auth.initialize();
+    // 2. INICIJALIZACIJA SESIJE
+    await client.auth.initialize().timeout(const Duration(seconds: 30));
 
-  // Otvori stream ako je korisnik već ulogovan
-  if (client.auth.isAuthenticated) {
-    try {
+    // Otvori stream ako je korisnik već ulogovan
+    if (client.auth.isAuthenticated) {
       await client.openStreamingConnection();
-      // Prosledi sve poruke u globalni broadcast stream
       client.chat.stream.listen((msg) => chatMessageController.add(msg));
       debugPrint("📡 Lasta: Strim uspešno otvoren!");
-    } catch (e) {
-      debugPrint("❌ Lasta: Greška pri otvaranju strima: $e");
     }
+  } catch (e) {
+    debugPrint('❌ GREŠKA PRI POVEZIVANJU NA SERVER: $e');
   }
 
   runApp(const MyApp());

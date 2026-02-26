@@ -335,6 +335,32 @@ class EndpointChat extends _i2.EndpointRef {
 }
 
 /// {@category Endpoint}
+class EndpointFcm extends _i2.EndpointRef {
+  EndpointFcm(_i2.EndpointCaller caller) : super(caller);
+
+  @override
+  String get name => 'fcm';
+
+  _i3.Future<void> saveToken(
+    String token,
+    String deviceType,
+  ) => caller.callServerEndpoint<void>(
+    'fcm',
+    'saveToken',
+    {
+      'token': token,
+      'deviceType': deviceType,
+    },
+  );
+
+  _i3.Future<void> deleteToken(String token) => caller.callServerEndpoint<void>(
+    'fcm',
+    'deleteToken',
+    {'token': token},
+  );
+}
+
+/// {@category Endpoint}
 class EndpointUser extends _i2.EndpointRef {
   EndpointUser(_i2.EndpointCaller caller) : super(caller);
 
@@ -434,6 +460,7 @@ class Client extends _i2.ServerpodClientShared {
     jwtRefresh = EndpointJwtRefresh(this);
     channel = EndpointChannel(this);
     chat = EndpointChat(this);
+    fcm = EndpointFcm(this);
     user = EndpointUser(this);
     greeting = EndpointGreeting(this);
     modules = Modules(this);
@@ -447,6 +474,8 @@ class Client extends _i2.ServerpodClientShared {
 
   late final EndpointChat chat;
 
+  late final EndpointFcm fcm;
+
   late final EndpointUser user;
 
   late final EndpointGreeting greeting;
@@ -459,6 +488,7 @@ class Client extends _i2.ServerpodClientShared {
     'jwtRefresh': jwtRefresh,
     'channel': channel,
     'chat': chat,
+    'fcm': fcm,
     'user': user,
     'greeting': greeting,
   };

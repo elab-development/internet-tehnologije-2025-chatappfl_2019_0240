@@ -68,7 +68,7 @@ class ChatEndpoint extends Endpoint {
             ? '${message.content.substring(0, 100)}...'
             : message.content;
 
-        await FcmEndpoint.pushToChannelMembers(
+        await pushToChannelMembers(
           session,
           message.channelId,
           userInfo.id!,

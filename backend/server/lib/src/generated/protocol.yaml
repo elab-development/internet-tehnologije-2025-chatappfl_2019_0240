@@ -18,6 +18,9 @@ channel:
 chat:
   - getPastMessages:
   - sendMessage:
+fcm:
+  - saveToken:
+  - deleteToken:
 user:
   - getMe:
   - getAllAvailableUsers:

@@ -15,19 +15,17 @@ class AppDrawer extends StatelessWidget {
       child: Column(
         children: [
           // 1. SAMO HEADER JE U FUTURE BUILDER-u
-          // Ako pukne, prikazaće default "Putnik" podatke, ali neće srušiti app
           FutureBuilder(
             future: client.user.getMe(),
             builder: (context, snapshot) {
               if (snapshot.hasData) {
-                // Ubaci ovo unutar FutureBuilder-a u AppDrawer-u
-                print(
+                debugPrint(
                   "DEBUG: UserName iz baze je: '${snapshot.data?.userName}'",
                 );
-                print("DEBUG: Email iz baze je: '${snapshot.data?.email}'");
-                print("DEBUG: ID iz baze je: ${snapshot.data?.id}");
+                debugPrint("DEBUG: Email iz baze je: '${snapshot.data?.email}'");
+                debugPrint("DEBUG: ID iz baze je: ${snapshot.data?.id}");
               }
-              // Ako ima podataka, super. Ako nema ili je greška, koristimo null (default)
+              
               final user = snapshot.data;
 
               return UserAccountsDrawerHeader(
@@ -60,7 +58,7 @@ class AppDrawer extends StatelessWidget {
                   ),
                 ),
                 accountEmail: Text(
-                  user?.email ?? 'Greška u učitavanju ili nema neta',
+                  user?.email ?? 'Učitavanje...',
                   style: const TextStyle(color: AppColors.lightGrey),
                 ),
               );
@@ -68,65 +66,74 @@ class AppDrawer extends StatelessWidget {
           ),
 
           // 2. OVO JE SADA VAN BUILDERA I UVEK SE VIDI
-          // Čak i ako server gori, ovo dugme radi!
-
-          // ID sekcija (Statična ili vezana za snapshot ako želiš, ali ovako je sigurnije)
-          const ListTile(
-            leading: Icon(Icons.badge, color: AppColors.lightYellow),
-            title: Text(
-              'Status',
-              style: TextStyle(color: Colors.white),
-            ),
-            subtitle: Text(
-              'Korisnik sistema',
-              style: TextStyle(color: Colors.grey),
-            ),
-          ),
-
-          const Divider(color: Colors.white24),
-
-          ListTile(
-            leading: const Icon(Icons.directions_bus, color: Colors.white),
-            title: const Text(
-              'Moje linije',
-              style: TextStyle(color: Colors.white),
-            ),
-            onTap: () => Navigator.pop(context),
-          ),
-
-          const Spacer(),
-
-          // 3. DUGME ZA SPAS (IZLAZ)
-          Padding(
-            padding: const EdgeInsets.only(bottom: 20.0),
-            child: ListTile(
-              leading: const Icon(Icons.exit_to_app, color: AppColors.red),
-              title: const Text(
-                'IZLAZ IZ BUSA',
-                style: TextStyle(
-                  color: AppColors.red,
-                  fontWeight: FontWeight.bold,
+          Expanded(
+            child: ListView(
+              padding: EdgeInsets.zero,
+              children: [
+                const ListTile(
+                  leading: Icon(Icons.badge, color: AppColors.lightYellow),
+                  title: Text(
+                    'Status',
+                    style: TextStyle(color: Colors.white),
+                  ),
+                  subtitle: Text(
+                    'Korisnik sistema',
+                    style: TextStyle(color: Colors.grey),
+                  ),
                 ),
-              ),
-              onTap: () async {
-                // Forsiramo logout bez obzira na server
-                try {
-                  // 1. Ovo briše ključeve sa servera
-                  await client.auth.signOutDevice();
-                  // 2. OVO JE KLJUČNO: Briše lokalni session manager (tokene) sa telefona
-                  var sessionManager = await SessionManager.instance;
-                  await sessionManager.signOutDevice();
-                } catch (e) {
-                  debugPrint("Greška pri odjavi: $e");
-                }
+                const Divider(color: Colors.white24),
+                ListTile(
+                  leading: const Icon(Icons.directions_bus, color: Colors.white),
+                  title: const Text(
+                    'Moje linije',
+                    style: TextStyle(color: Colors.white),
+                  ),
+                  onTap: () => Navigator.pop(context),
+                ),
+                
+                // RAZMAKNICA DO ODJAVE
+                const SizedBox(height: 20),
+                
+                const Divider(color: Colors.white24, height: 1),
+                ListTile(
+                  leading: const Icon(Icons.exit_to_app, color: AppColors.red),
+                  title: const Text(
+                    'IZLAZ IZ BUSA',
+                    style: TextStyle(
+                      color: AppColors.red,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  onTap: () async {
+                    try {
+                      // 1. Ovo briše ključeve sa servera
+                      await client.auth.signOutDevice();
+                      // 2. OVO JE KLJUČNO: Briše lokalni session manager (tokene) sa telefona
+                      var sessionManager = await SessionManager.instance;
+                      await sessionManager.signOutDevice();
+                    } catch (e) {
+                      debugPrint("Greška pri odjavi: $e");
+                    }
 
-                if (context.mounted) {
-                  // Vraćamo se na početni ekran (Login) i brišemo istoriju stack-a
-                  Navigator.of(
-                    context,
-                  ).pushNamedAndRemoveUntil('/', (route) => false);
-                }
-              },
+                    if (context.mounted) {
+                      // Vraćamo se na početni ekran (Login)
+                      Navigator.of(context).pushAndRemoveUntil(
+                        MaterialPageRoute(builder: (context) => const MyApp()),
+                        (route) => false,
+                      );
+                    }
+                  },
+                ),
+              ],
+            ),
+          ),
+          
+          // Verzija na dnu
+          const Padding(
+            padding: EdgeInsets.all(8.0),
+            child: Text(
+              'v1.0.493',
+              style: TextStyle(color: Colors.white24, fontSize: 10),
             ),
           ),
         ],

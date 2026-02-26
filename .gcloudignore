@@ -1,0 +1,29 @@
+# Exclude everything that isn't needed by the Docker build
+# Docker build only needs: packages/api_client/ and backend/server/
+
+# Flutter app (not needed for backend build)
+apps/
+
+# Large build artifacts
+**/build/
+**/.dart_tool/
+**/.flutter-plugins
+**/.flutter-plugins-dependencies
+
+# Test artifacts
+**/test/
+**/.pub-cache/
+
+# Git and IDE
+.git/
+.gitignore
+.idea/
+.vscode/
+
+# Melos workspace files (not needed inside Docker)
+melos.yaml
+melos_*.iml
+pubspec.lock
+
+# Firebase admin SDK (secrets kept only in passwords.yaml)
+chatapp493-firebase-adminsdk-*.json

@@ -136,6 +136,8 @@ class TestEndpoints {
 
   late final _ChatEndpoint chat;
 
+  late final _FcmEndpoint fcm;
+
   late final _UserEndpoint user;
 
   late final _GreetingEndpoint greeting;
@@ -161,6 +163,10 @@ class _InternalTestEndpoints extends TestEndpoints
       serializationManager,
     );
     chat = _ChatEndpoint(
+      endpoints,
+      serializationManager,
+    );
+    fcm = _FcmEndpoint(
       endpoints,
       serializationManager,
     );
@@ -731,6 +737,83 @@ class _ChatEndpoint {
           endpointPath: 'chat',
           methodName: 'sendMessage',
           parameters: _i1.testObjectToJson({'message': message}),
+          serializationManager: _serializationManager,
+        );
+        var _localReturnValue =
+            await (_localCallContext.method.call(
+                  _localUniqueSession,
+                  _localCallContext.arguments,
+                )
+                as _i3.Future<void>);
+        return _localReturnValue;
+      } finally {
+        await _localUniqueSession.close();
+      }
+    });
+  }
+}
+
+class _FcmEndpoint {
+  _FcmEndpoint(
+    this._endpointDispatch,
+    this._serializationManager,
+  );
+
+  final _i2.EndpointDispatch _endpointDispatch;
+
+  final _i2.SerializationManager _serializationManager;
+
+  _i3.Future<void> saveToken(
+    _i1.TestSessionBuilder sessionBuilder,
+    String token,
+    String deviceType,
+  ) async {
+    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+      var _localUniqueSession =
+          (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+            endpoint: 'fcm',
+            method: 'saveToken',
+          );
+      try {
+        var _localCallContext = await _endpointDispatch.getMethodCallContext(
+          createSessionCallback: (_) => _localUniqueSession,
+          endpointPath: 'fcm',
+          methodName: 'saveToken',
+          parameters: _i1.testObjectToJson({
+            'token': token,
+            'deviceType': deviceType,
+          }),
+          serializationManager: _serializationManager,
+        );
+        var _localReturnValue =
+            await (_localCallContext.method.call(
+                  _localUniqueSession,
+                  _localCallContext.arguments,
+                )
+                as _i3.Future<void>);
+        return _localReturnValue;
+      } finally {
+        await _localUniqueSession.close();
+      }
+    });
+  }
+
+  _i3.Future<void> deleteToken(
+    _i1.TestSessionBuilder sessionBuilder,
+    String token,
+  ) async {
+    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+      var _localUniqueSession =
+          (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+            endpoint: 'fcm',
+            method: 'deleteToken',
+          );
+      try {
+        var _localCallContext = await _endpointDispatch.getMethodCallContext(
+          createSessionCallback: (_) => _localUniqueSession,
+          endpointPath: 'fcm',
+          methodName: 'deleteToken',
+          parameters: _i1.testObjectToJson({'token': token}),
           serializationManager: _serializationManager,
         );
         var _localReturnValue =

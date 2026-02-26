@@ -15,14 +15,15 @@ import '../auth/email_idp_endpoint.dart' as _i2;
 import '../auth/jwt_refresh_endpoint.dart' as _i3;
 import '../endpoint/channel_endpoint.dart' as _i4;
 import '../endpoint/chat_endpoint.dart' as _i5;
-import '../endpoint/user_endpoint.dart' as _i6;
-import '../greetings/greeting_endpoint.dart' as _i7;
-import 'package:chatapp_server/src/generated/message.dart' as _i8;
+import '../endpoint/fcm_endpoint.dart' as _i6;
+import '../endpoint/user_endpoint.dart' as _i7;
+import '../greetings/greeting_endpoint.dart' as _i8;
+import 'package:chatapp_server/src/generated/message.dart' as _i9;
 import 'package:serverpod_auth_idp_server/serverpod_auth_idp_server.dart'
-    as _i9;
-import 'package:serverpod_auth_server/serverpod_auth_server.dart' as _i10;
+    as _i10;
+import 'package:serverpod_auth_server/serverpod_auth_server.dart' as _i11;
 import 'package:serverpod_auth_core_server/serverpod_auth_core_server.dart'
-    as _i11;
+    as _i12;
 
 class Endpoints extends _i1.EndpointDispatch {
   @override
@@ -52,13 +53,19 @@ class Endpoints extends _i1.EndpointDispatch {
           'chat',
           null,
         ),
-      'user': _i6.UserEndpoint()
+      'fcm': _i6.FcmEndpoint()
+        ..initialize(
+          server,
+          'fcm',
+          null,
+        ),
+      'user': _i7.UserEndpoint()
         ..initialize(
           server,
           'user',
           null,
         ),
-      'greeting': _i7.GreetingEndpoint()
+      'greeting': _i8.GreetingEndpoint()
         ..initialize(
           server,
           'greeting',
@@ -413,7 +420,7 @@ class Endpoints extends _i1.EndpointDispatch {
           params: {
             'message': _i1.ParameterDescription(
               name: 'message',
-              type: _i1.getType<_i8.Message>(),
+              type: _i1.getType<_i9.Message>(),
               nullable: false,
             ),
           },
@@ -424,6 +431,54 @@ class Endpoints extends _i1.EndpointDispatch {
               ) async => (endpoints['chat'] as _i5.ChatEndpoint).sendMessage(
                 session,
                 params['message'],
+              ),
+        ),
+      },
+    );
+    connectors['fcm'] = _i1.EndpointConnector(
+      name: 'fcm',
+      endpoint: endpoints['fcm']!,
+      methodConnectors: {
+        'saveToken': _i1.MethodConnector(
+          name: 'saveToken',
+          params: {
+            'token': _i1.ParameterDescription(
+              name: 'token',
+              type: _i1.getType<String>(),
+              nullable: false,
+            ),
+            'deviceType': _i1.ParameterDescription(
+              name: 'deviceType',
+              type: _i1.getType<String>(),
+              nullable: false,
+            ),
+          },
+          call:
+              (
+                _i1.Session session,
+                Map<String, dynamic> params,
+              ) async => (endpoints['fcm'] as _i6.FcmEndpoint).saveToken(
+                session,
+                params['token'],
+                params['deviceType'],
+              ),
+        ),
+        'deleteToken': _i1.MethodConnector(
+          name: 'deleteToken',
+          params: {
+            'token': _i1.ParameterDescription(
+              name: 'token',
+              type: _i1.getType<String>(),
+              nullable: false,
+            ),
+          },
+          call:
+              (
+                _i1.Session session,
+                Map<String, dynamic> params,
+              ) async => (endpoints['fcm'] as _i6.FcmEndpoint).deleteToken(
+                session,
+                params['token'],
               ),
         ),
       },
@@ -439,7 +494,7 @@ class Endpoints extends _i1.EndpointDispatch {
               (
                 _i1.Session session,
                 Map<String, dynamic> params,
-              ) async => (endpoints['user'] as _i6.UserEndpoint).getMe(session),
+              ) async => (endpoints['user'] as _i7.UserEndpoint).getMe(session),
         ),
         'getAllAvailableUsers': _i1.MethodConnector(
           name: 'getAllAvailableUsers',
@@ -448,7 +503,7 @@ class Endpoints extends _i1.EndpointDispatch {
               (
                 _i1.Session session,
                 Map<String, dynamic> params,
-              ) async => (endpoints['user'] as _i6.UserEndpoint)
+              ) async => (endpoints['user'] as _i7.UserEndpoint)
                   .getAllAvailableUsers(session),
         ),
         'searchUsers': _i1.MethodConnector(
@@ -464,7 +519,7 @@ class Endpoints extends _i1.EndpointDispatch {
               (
                 _i1.Session session,
                 Map<String, dynamic> params,
-              ) async => (endpoints['user'] as _i6.UserEndpoint).searchUsers(
+              ) async => (endpoints['user'] as _i7.UserEndpoint).searchUsers(
                 session,
                 params['query'],
               ),
@@ -483,7 +538,7 @@ class Endpoints extends _i1.EndpointDispatch {
                 _i1.Session session,
                 Map<String, dynamic> params,
               ) async =>
-                  (endpoints['user'] as _i6.UserEndpoint).getUserPublicProfile(
+                  (endpoints['user'] as _i7.UserEndpoint).getUserPublicProfile(
                     session,
                     params['userId'],
                   ),
@@ -507,17 +562,17 @@ class Endpoints extends _i1.EndpointDispatch {
               (
                 _i1.Session session,
                 Map<String, dynamic> params,
-              ) async => (endpoints['greeting'] as _i7.GreetingEndpoint).hello(
+              ) async => (endpoints['greeting'] as _i8.GreetingEndpoint).hello(
                 session,
                 params['name'],
               ),
         ),
       },
     );
-    modules['serverpod_auth_idp'] = _i9.Endpoints()
+    modules['serverpod_auth_idp'] = _i10.Endpoints()
       ..initializeEndpoints(server);
-    modules['serverpod_auth'] = _i10.Endpoints()..initializeEndpoints(server);
-    modules['serverpod_auth_core'] = _i11.Endpoints()
+    modules['serverpod_auth'] = _i11.Endpoints()..initializeEndpoints(server);
+    modules['serverpod_auth_core'] = _i12.Endpoints()
       ..initializeEndpoints(server);
   }
 }

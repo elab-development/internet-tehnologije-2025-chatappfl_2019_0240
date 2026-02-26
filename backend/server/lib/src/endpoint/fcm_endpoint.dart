@@ -73,172 +73,140 @@ class FcmEndpoint extends Endpoint {
       print('🗑️ FCM token obrisan za korisnika ${user.id}');
     }
   }
+}
 
-  // ─── SERVER INTERNI: šalje FCM push svim članovima kanala, osim pošiljaoca ─
+// ─── SERVER INTERNI: šalje FCM push svim članovima kanala, osim pošiljaoca ─
 
-  static Future<void> pushToChannelMembers(
-    Session session,
-    int channelId,
-    int senderUserId,
-    String channelName,
-    String messagePreview,
-    String senderName,
-  ) async {
-    // 1. Dohvati sve članove kanala (isključi pošiljaoca)
-    final memberships = await protocol.ChannelMember.db.find(
-      session,
-      where: (t) => t.channelId.equals(channelId),
-    );
+Future<void> pushToChannelMembers(
+  Session session,
+  int channelId,
+  int senderUserId,
+  String channelName,
+  String messagePreview,
+  String senderName,
+) async {
+  // 1. Dohvati sve članove kanala (isključi pošiljaoca)
+  final memberships = await protocol.ChannelMember.db.find(
+    session,
+    where: (t) => t.channelId.equals(channelId),
+  );
 
-    final recipientUserIds = memberships
-        .map((m) => m.userId)
-        .whereType<int>()
-        .where((id) => id != senderUserId) // isključi pošiljaoca
-        .toSet()
-        .toList();
+  final recipientUserIds = memberships
+      .map((m) => m.userId)
+      .whereType<int>()
+      .where((id) => id != senderUserId) // isključi pošiljaoca
+      .toSet()
+      .toList();
 
-    if (recipientUserIds.isEmpty) return;
+  if (recipientUserIds.isEmpty) return;
 
-    // 2. Dohvati FCM tokene tih korisnika
-    final fcmTokenRows = await protocol.FcmToken.db.find(
-      session,
-      where: (t) => t.userId.inSet(recipientUserIds.toSet()),
-    );
+  // 2. Dohvati FCM tokene tih korisnika
+  final fcmTokenRows = await protocol.FcmToken.db.find(
+    session,
+    where: (t) => t.userId.inSet(recipientUserIds.toSet()),
+  );
 
-    final tokens = fcmTokenRows.map((r) => r.token).toList();
-    if (tokens.isEmpty) return;
+  final tokens = fcmTokenRows.map((r) => r.token).toList();
+  if (tokens.isEmpty) return;
 
-    // 3. Pošalji FCM push notifikaciju (v1 API)
-    await _sendFcmV1Batch(
-      session: session,
-      tokens: tokens,
-      title: channelName,
-      body: '$senderName: $messagePreview',
-      data: {
-        'channelId': '$channelId',
-        'type': 'new_message',
-      },
-    );
+  // 3. Pošalji FCM push notifikaciju (v1 API)
+  await _sendFcmV1Batch(
+    session: session,
+    tokens: tokens,
+    title: channelName,
+    body: '$senderName: $messagePreview',
+    data: {
+      'channelId': '$channelId',
+      'type': 'new_message',
+    },
+  );
+}
+
+// ─── FCM HTTP v1 API: OAuth2 service account slanje ─────────────────────
+
+Future<void> _sendFcmV1Batch({
+  required Session session,
+  required List<String> tokens,
+  required String title,
+  required String body,
+  required Map<String, String> data,
+}) async {
+  final serviceAccountJson = session.passwords['fcmServiceAccountJson'];
+  if (serviceAccountJson == null || serviceAccountJson.isEmpty) {
+    print('⚠️ FCM v1: fcmServiceAccountJson nije podešen u passwords.yaml!');
+    return;
   }
-
-  // ─── FCM HTTP v1 API: OAuth2 service account slanje ─────────────────────
-
-  static Future<void> _sendFcmV1Batch({
-    required Session session,
-    required List<String> tokens,
-    required String title,
-    required String body,
-    required Map<String, String> data,
-  }) async {
-    final serviceAccountJson = session.passwords['fcmServiceAccountJson'];
-    if (serviceAccountJson == null || serviceAccountJson.isEmpty) {
-      print('⚠️ FCM v1: fcmServiceAccountJson nije podešen u passwords.yaml!');
-      return;
-    }
-    final Map<String, dynamic> saMap = jsonDecode(serviceAccountJson);
-    final projectId = saMap['project_id'] as String?;
-    if (projectId == null) {
-      print('⚠️ FCM v1: project_id nije pronađen u service account JSON!');
-      return;
-    }
-    final accountCredentials = ga.ServiceAccountCredentials.fromJson(
-      serviceAccountJson,
+  final Map<String, dynamic> saMap = jsonDecode(serviceAccountJson);
+  final projectId = saMap['project_id'] as String?;
+  if (projectId == null) {
+    print('⚠️ FCM v1: project_id nije pronađen u service account JSON!');
+    return;
+  }
+  final accountCredentials = ga.ServiceAccountCredentials.fromJson(
+    serviceAccountJson,
+  );
+  const scopes = ['https://www.googleapis.com/auth/firebase.messaging'];
+  final authClient = await ga.clientViaServiceAccount(
+    accountCredentials,
+    scopes,
+  );
+  try {
+    final url = Uri.parse(
+      'https://fcm.googleapis.com/v1/projects/$projectId/messages:send',
     );
-    const scopes = ['https://www.googleapis.com/auth/firebase.messaging'];
-    final authClient = await ga.clientViaServiceAccount(
-      accountCredentials,
-      scopes,
-    );
-    try {
-      final url = Uri.parse(
-        'https://fcm.googleapis.com/v1/projects/$projectId/messages:send',
-      );
-      for (final token in tokens) {
-        final payload = {
-          'message': {
-            'token': token,
-            'notification': {
-              'title': title,
-              'body': body,
-            },
-            'data': data,
-            'android': {
-              'priority': 'HIGH',
-              'notification': {'sound': 'default'},
-            },
-            'apns': {
-              'headers': {'apns-priority': '10'},
-              'payload': {
-                'aps': {'sound': 'default'},
-              },
+    for (final token in tokens) {
+      final payload = {
+        'message': {
+          'token': token,
+          'notification': {
+            'title': title,
+            'body': body,
+          },
+          'data': data,
+          'android': {
+            'priority': 'HIGH',
+            'notification': {'sound': 'default'},
+          },
+          'apns': {
+            'headers': {'apns-priority': '10'},
+            'payload': {
+              'aps': {'sound': 'default'},
             },
           },
-        };
-        final resp = await authClient.post(
-          url,
-          headers: {'Content-Type': 'application/json; charset=UTF-8'},
-          body: jsonEncode(payload),
+        },
+      };
+      final resp = await authClient.post(
+        url,
+        headers: {'Content-Type': 'application/json; charset=UTF-8'},
+        body: jsonEncode(payload),
+      );
+      if (resp.statusCode == 200) {
+        // success for this token
+      } else {
+        print(
+          '❌ FCM v1 error for token $token: \n${resp.statusCode} ${resp.body}',
         );
-        if (resp.statusCode == 200) {
-          // success for this token
-        } else {
-          print(
-            '❌ FCM v1 error for token $token: \n${resp.statusCode} ${resp.body}',
+        // Cleanup: brisanje tokena ako je NOT_FOUND/INVALID_ARGUMENT
+        final bodyMap = (resp.body.isNotEmpty)
+            ? jsonDecode(resp.body) as Map<String, dynamic>
+            : {};
+        final err = bodyMap['error'] as Map<String, dynamic>?;
+        final status = err?['status'] as String?;
+        if (status == 'NOT_FOUND' ||
+            status == 'INVALID_ARGUMENT' ||
+            status == 'PERMISSION_DENIED') {
+          final rows = await protocol.FcmToken.db.find(
+            session,
+            where: (t) => t.token.equals(token),
           );
-          // Cleanup: brisanje tokena ako je NOT_FOUND/INVALID_ARGUMENT
-          final bodyMap = (resp.body.isNotEmpty)
-              ? jsonDecode(resp.body) as Map<String, dynamic>
-              : {};
-          final err = bodyMap['error'] as Map<String, dynamic>?;
-          final status = err?['status'] as String?;
-          if (status == 'NOT_FOUND' ||
-              status == 'INVALID_ARGUMENT' ||
-              status == 'PERMISSION_DENIED') {
-            final rows = await protocol.FcmToken.db.find(
-              session,
-              where: (t) => t.token.equals(token),
-            );
-            for (final r in rows) {
-              await protocol.FcmToken.db.deleteRow(session, r);
-            }
+          for (final r in rows) {
+            await protocol.FcmToken.db.deleteRow(session, r);
           }
         }
       }
-    } finally {
-      authClient.close();
     }
-  }
-
-  // ─── PRIVATNI HELPER: ukloni tokene koje FCM prijavi kao invalid ──────────
-
-  static Future<void> _cleanupInvalidTokens(
-    Session session,
-    List<String> tokens,
-    Map<String, dynamic> responseBody,
-  ) async {
-    final results = responseBody['results'] as List<dynamic>?;
-    if (results == null) return;
-
-    final invalidTokens = <String>[];
-    for (var i = 0; i < results.length; i++) {
-      final result = results[i] as Map<String, dynamic>;
-      final error = result['error'] as String?;
-      if (error == 'NotRegistered' || error == 'InvalidRegistration') {
-        invalidTokens.add(tokens[i]);
-      }
-    }
-
-    if (invalidTokens.isEmpty) return;
-
-    print('🧹 Brišem ${invalidTokens.length} invalid FCM tokena...');
-    for (final token in invalidTokens) {
-      final rows = await protocol.FcmToken.db.find(
-        session,
-        where: (t) => t.token.equals(token),
-      );
-      for (final row in rows) {
-        await protocol.FcmToken.db.deleteRow(session, row);
-      }
-    }
+  } finally {
+    authClient.close();
   }
 }
+
