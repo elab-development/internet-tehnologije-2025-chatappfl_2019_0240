@@ -1,0 +1,65 @@
+name: CI/CD Pipeline
+
+on:
+  push:
+    branches:
+      - master
+  pull_request:
+    branches:
+      - master
+
+jobs:
+  # 1. CI Job - Pokreće se na svaki push/PR, proverava kod
+  flutter_ci:
+    name: Flutter CI Test
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repozitorijuma
+        uses: actions/checkout@v4
+
+      - name: Setup Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: '3.32.0'
+          channel: 'stable'
+
+      - name: Setup Dart
+        uses: dart-lang/setup-dart@v1
+
+      - name: Install Melos
+        run: dart pub global activate melos
+
+      - name: Bootstrap Workspace
+        run: melos bootstrap
+
+      - name: Analyze Project
+        run: melos run analyze --no-select
+
+  # 2. CD Job - Backend Deploy (Pokreće se samo na push u main granu)
+  deploy_backend:
+    name: Deploy Backend to Cloud Run
+    runs-on: ubuntu-latest
+    needs: flutter_ci # Zahteva da CI prođe uspešno
+    if: github.ref == 'refs/heads/master' && github.event_name == 'push'
+    steps:
+      - name: Checkout repozitorijuma
+        uses: actions/checkout@v4
+
+      # OVO ZAHTEVA DA U GITHUB SECRETS DODAS GCP_CREDENTIALS SA TVOJIM SA JSON KLJUCEM
+      - name: Authenticate to Google Cloud
+        uses: google-github-actions/auth@v2
+        with:
+          credentials_json: ${{ secrets.GCP_CREDENTIALS }}
+
+      - name: Set up Cloud SDK
+        uses: google-github-actions/setup-gcloud@v2
+
+      - name: Configure Docker to use gcloud as a credential helper
+        run: gcloud --quiet auth configure-docker
+
+      # Koristi tvoju postojeću skriptu za deploy!
+      - name: Run Deploy Script
+        run: |
+          chmod +x ./cloud-run-deploy.sh
+          ./cloud-run-deploy.sh
+
